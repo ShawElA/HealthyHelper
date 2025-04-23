@@ -1,103 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/colorLight"
     android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:id="@+id/sportStepPanel"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    android:padding="20dp">
 
-            <com.example.healthyolder.view.SportStepView
-                android:id="@+id/sportStepCount"
-                android:layout_centerHorizontal="true"
-                android:layout_width="200dp"
-                android:layout_height="200dp" />
-        </RelativeLayout>
-        <TextView
-            android:id="@+id/sportStepCountInfo"
-            android:layout_gravity="center"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
-            android:paddingLeft="25dp"
-            android:paddingRight="25dp"
-            android:text="抑郁测试分"
-            android:textSize="20sp"
-            android:textColor="@color/colorLight"
-            android:background="@drawable/bg_btn_theme_circle"
-            android:layout_width="match_parent"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_height="100dp" />
-    </LinearLayout>
-
-    <LinearLayout
+    <!-- 步数视图 -->
+    <com.example.healthyolder.view.SportStepView
+        android:id="@+id/sportStepCount"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="20dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:layout_weight="1"
-            android:id="@+id/tv_test"
-            android:layout_gravity="center_horizontal"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="25dp"
-            android:text="抑郁自测"
-            android:textSize="25sp"
-            android:textColor="@color/colorLight"
-            android:background="@drawable/bg_btn_purple_circle"
-            android:layout_width="match_parent"
-            android:layout_marginRight="10dp"
-            android:layout_height="match_parent" />
+    <!-- 步数信息 -->
+    <TextView
+        android:id="@+id/sportStepCountInfo"
+        android:layout_width="0dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_btn_theme_circle"
+        android:gravity="center"
+        android:padding="12dp"
+        android:text="抑郁测试分"
+        android:textColor="@color/colorLight"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sportStepCount" />
 
-        <LinearLayout
-            android:layout_marginLeft="10dp"
-            android:orientation="vertical"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <!-- 抑郁自测 -->
+    <TextView
+        android:id="@+id/tv_test"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_btn_purple_circle"
+        android:gravity="center"
+        android:padding="12dp"
+        android:text="抑郁自测"
+        android:textColor="@color/colorLight"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sportStepCountInfo" />
 
-            <TextView
-                android:layout_weight="1"
-                android:id="@+id/tv_test1"
-                android:layout_gravity="center_horizontal"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="25dp"
-                android:text="抑郁了,\n怎么办"
-                android:textSize="25sp"
-                android:textColor="@color/colorLight"
-                android:background="@drawable/bg_btn_pink_circle"
-                android:layout_width="match_parent"
-                android:layout_marginBottom="20dp"
-                android:layout_height="200dp" />
+    <!-- 抑郁了怎么办 -->
+    <TextView
+        android:id="@+id/tv_test1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_btn_pink_circle"
+        android:gravity="center"
+        android:padding="12dp"
+        android:text="抑郁了,\n怎么办"
+        android:textColor="@color/colorLight"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_test" />
 
-            <TextView
-                android:id="@+id/tv_test2"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
-                android:background="@drawable/bg_btn_green_circle"
-                android:paddingLeft="5dp"
-                android:paddingTop="2dp"
-                android:paddingRight="25dp"
-                android:paddingBottom="2dp"
-                android:text="抑郁自测"
-                android:textColor="@color/colorLight"
-                android:textSize="25sp" />
-        </LinearLayout>
-    </LinearLayout>
-</LinearLayout>
+    <!-- 再次自测 -->
+    <TextView
+        android:id="@+id/tv_test2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        android:padding="12dp"
+        android:text="抑郁自测"
+        android:textSize="25sp"
+        android:textColor="@color/colorLight"
+        android:gravity="center"
+        android:background="@drawable/bg_btn_green_circle"
+        app:layout_constraintTop_toBottomOf="@id/tv_test1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
