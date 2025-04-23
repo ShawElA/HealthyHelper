@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_item"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView android:id="@+id/img"
+        android:layout_margin="5dp"
+        android:src="@mipmap/nav_logo"
+        android:layout_width="50dp"
+        android:layout_height="50dp" />
+    <RelativeLayout android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:paddingTop="5dp"
+        android:paddingRight="5dp"
+        android:layout_height="match_parent">
+        <TextView android:text="xxx"
+            android:textColor="#000"
+            android:textSize="16sp"
+            android:id="@+id/tvName"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            />
+
+    </RelativeLayout>
+</LinearLayout>

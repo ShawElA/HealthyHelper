@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.android.percent.support.PercentLinearLayout
+    android:id="@+id/pll_parent_courseDetailAcy"
+    style="@style/CommonVerticalPercentLinearLayoutSty"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.example.healthyolder.view.CommonToolBar
+        android:id="@+id/ctl_title"
+        style="@style/CommonToolBarSty"
+        app:isLeftImgClickToFinishAcy="true"
+        app:middleText="医生详情">
+    </com.example.healthyolder.view.CommonToolBar>
+    <View style="@style/HorizontalViewSty"/>
+    <com.zhy.android.percent.support.PercentLinearLayout
+        android:id="@+id/pll_container_courseDetailAcy"
+        style="@style/CommonVerticalPercentLinearLayoutSty">
+        <com.zhy.android.percent.support.PercentRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:layout_paddingPercent="2.5%w">
+            <com.example.healthyolder.view.MyImageView
+                android:id="@+id/miv_courseImg_courseDetailAcy"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="fitXY"
+                android:src="@mipmap/default_head"
+                app:layout_heightPercent="38%w"
+                app:layout_widthPercent="30%w"/>
+
+            <TextView
+                android:id="@+id/tv_courseName_courseDetailAcy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/miv_courseImg_courseDetailAcy"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text=""
+                android:textColor="@color/lightBlack"
+                app:layout_marginLeftPercent="2.5%w"
+                app:layout_textSizePercent="5.3%w"/>
+
+            <ImageView
+                android:layout_toRightOf="@+id/tv_courseName_courseDetailAcy"
+                android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/iv_msg"
+                />
+
+            <TextView
+                android:id="@+id/tv_purchaseNumber_courseDetailAcy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_courseName_courseDetailAcy"
+                android:layout_toRightOf="@id/miv_courseImg_courseDetailAcy"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="@color/grey"
+                app:layout_marginLeftPercent="2.5%w"
+                app:layout_marginTopPercent="2%w"
+                app:layout_textSizePercent="4.5%w"/>
+
+        </com.zhy.android.percent.support.PercentRelativeLayout>
+        <View style="@style/HorizontalViewSty"/>
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tl_title_courseDetailAcy"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            app:layout_heightPercent="8%h"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="@color/middleBlue"
+            app:tabMode="fixed">
+
+        </com.google.android.material.tabs.TabLayout>
+        <View
+            style="@style/HorizontalViewSty"/>
+        <!--可滑动的布局内容-->
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/vp_showFragment_courseDetailAcy"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/white"/>
+    </com.zhy.android.percent.support.PercentLinearLayout>
+
+</com.zhy.android.percent.support.PercentLinearLayout>

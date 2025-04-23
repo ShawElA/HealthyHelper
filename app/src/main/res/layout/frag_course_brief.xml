@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.android.percent.support.PercentLinearLayout
+    style="@style/CommonVerticalPercentLinearLayoutSty"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white">
+    <ListView
+        android:id="@+id/lv_brief_courseBriefFrag"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:divider="@color/paleGrey"
+        android:dividerHeight="5dp"
+        android:listSelector="@color/transparent">
+    </ListView>
+
+</com.zhy.android.percent.support.PercentLinearLayout>

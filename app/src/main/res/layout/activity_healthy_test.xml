@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.example.healthyolder.view.CommonToolBar
+        android:id="@+id/rl_commonToolBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        app:isShowLeftImage="true"
+        app:leftImage="@mipmap/btn_back"
+        app:isShowRightText="true"
+        app:rightTextColor="@color/colorTheme"
+        app:middleText="">
+    </com.example.healthyolder.view.CommonToolBar>
+
+    <com.example.healthyolder.view.SlideViewPager
+        android:layout_below="@+id/rl_commonToolBar"
+        android:layout_centerInParent="true"
+        android:id="@+id/svp_common"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</RelativeLayout>

@@ -1,0 +1,87 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+    </style>
+
+    <style name="DefaultClickable">
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/selector_default_press</item>
+    </style>
+
+    <style name="imageButtonStyle">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_gravity">center_vertical</item>
+
+    </style>
+
+    <style name="CommonToolBarTextViewStyle">
+        <item name="android:textSize">@dimen/toolbar_middle_textSize</item>
+        <item name="android:textColor">@color/colorDarkText</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <!-- 首页标题栏-->
+    <style name="CommonToolBarMain">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:background">@color/white</item>
+    </style>
+
+    <!-- 水平分割线-->
+    <style name="HorizontalViewSty">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/lightGrey</item>
+    </style>
+    <!-- 垂直分割线-->
+    <style name="VerticalViewSty">
+        <item name="android:layout_width">1dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/lightGrey</item>
+    </style>
+
+    <style name="CommonVerticalPercentLinearLayoutSty">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/paleGrey</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="CommonToolBarSty">
+        <item name="layout_heightPercent">8.6%h</item>
+        <item name="isShowLeftImage">true</item>
+        <item name="leftImage">@mipmap/back</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:background">@color/white</item>
+    </style>
+
+    <style name="LeftTextViewPlusStyMineFrag">
+        <item name="leftImgHeightScale">0.035</item>
+        <item name="leftImgWidthScale">0.035</item>
+        <item name="layout_textSizePercent">5%w</item>
+        <item name="layout_paddingPercent">4%w</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:drawablePadding">5dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/lightBlack</item>
+    </style>
+
+    <style name="SharePopupWindowAnimation" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@anim/ppw_slide_in_from_bottom</item>
+        <item name="android:windowExitAnimation">@anim/ppw_slide_out_to_bottom</item>
+    </style>
+</resources>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.example.healthyolder.view.CommonToolBar
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        app:middleText="关于"
+        app:isShowLeftImage="true"
+        app:leftImage="@mipmap/btn_back"
+        app:isLeftImgClickToFinishAcy="true"
+        />
+
+    <View style="@style/HorizontalViewSty"/>
+
+    <RelativeLayout
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="200dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:id="@+id/iv_logo"
+            android:background="@mipmap/nav_logo"
+            android:layout_centerInParent="true"
+            />
+        <TextView
+            android:id="@+id/tv_versionCode_aboutPuHuiAcy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv_logo"
+            android:layout_centerHorizontal="true"
+            android:text="版本：V1.0"
+            android:textColor="@color/colorText"
+            android:layout_marginTop="40dp"
+            android:textSize="20sp"/>
+    </RelativeLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:lineSpacingExtra="5dp"
+        android:text="CopyRight \nweven 提供技术支持"
+        android:textColor="@color/colorDark"
+        android:layout_marginBottom="30dp"
+        android:textSize="@dimen/toolbar_middle_textSize"/>
+</RelativeLayout>

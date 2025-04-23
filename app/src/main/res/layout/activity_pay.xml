@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.android.percent.support.PercentLinearLayout
+    android:id="@+id/pll_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.example.healthyolder.view.CommonToolBar
+        style="@style/CommonToolBarSty"
+        app:layout_heightPercent="9.36133%h"
+        app:isShowLeftImage="true"
+        app:isLeftImgClickToFinishAcy="true"
+        android:id="@+id/toolbar"
+        app:middleText="支付订单"/>
+
+    <View style="@style/HorizontalViewSty"  />
+    <com.zhy.android.percent.support.PercentRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_heightPercent="20%w">
+
+        <TextView
+            android:id="@+id/tv_pay_time"
+            android:layout_marginTop="5dp"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="支付剩余时间："
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/tv_time_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_pay_time"
+            android:text="15:55"
+            android:layout_marginTop="10dp"
+            android:textSize="30sp"
+            android:layout_centerHorizontal="true"
+            />
+    </com.zhy.android.percent.support.PercentRelativeLayout>
+
+    <com.zhy.android.percent.support.PercentRelativeLayout
+        android:id="@+id/prl_wechat_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_heightPercent="15%w"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/iv_wechat_icon"
+            android:layout_marginLeft="15dp"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/wechat_pay"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/iv_wechat_icon"
+            android:text="微信支付"
+            android:textSize="20sp"
+            android:layout_marginLeft="6dp"
+            />
+
+        <ImageView
+            android:id="@+id/iv_wechat_select"
+            android:visibility="gone"
+            android:layout_marginRight="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@mipmap/selected"
+            android:layout_centerVertical="true"
+            />
+    </com.zhy.android.percent.support.PercentRelativeLayout>
+
+    <com.zhy.android.percent.support.PercentRelativeLayout
+        android:id="@+id/prl_ali_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_heightPercent="15%w"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/iv_ali_icon"
+            android:layout_marginLeft="15dp"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/alipay"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/iv_ali_icon"
+            android:text="支付宝支付"
+            android:textSize="20sp"
+            android:layout_marginLeft="6dp"
+            />
+
+        <ImageView
+            android:id="@+id/iv_ali_select"
+            android:visibility="gone"
+            android:layout_marginRight="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@mipmap/selected"
+            android:layout_centerVertical="true"
+            />
+    </com.zhy.android.percent.support.PercentRelativeLayout>
+    <Button
+        app:layout_marginPercent="1%h"
+        android:layout_below="@+id/et_password_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_pay"
+        android:text="确认支付￥111"
+        android:textColor="@color/white"
+        android:background="@drawable/sel_login"
+        android:enabled="false"
+        app:layout_textSizePercent="5%w"
+        />
+</com.zhy.android.percent.support.PercentLinearLayout>

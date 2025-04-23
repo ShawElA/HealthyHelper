@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.android.percent.support.PercentLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#f2f2f2"
+        android:id="@+id/containerLayout">
+        <include layout="@layout/layout_mian_shopping_cart"
+            android:layout_width="match_parent"
+            android:layout_above="@+id/bottom"
+            android:layout_height="match_parent"/>
+
+    </RelativeLayout>
+</com.zhy.android.percent.support.PercentLinearLayout>

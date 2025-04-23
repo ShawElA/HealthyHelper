@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#67AEF5</color>
+    <color name="colorPrimaryDark">#67AEF5</color>
+    <color name="colorAccent">#67AEF5</color>
+
+    <color name="colorTheme">#67AEF5</color>
+    <color name="colorThemePale">#B3D3F3</color>
+    <color name="colorDark">#000106</color>
+    <color name="colorLight">#FEFEFE</color>
+    <color name="colorBack">#F8F8F8</color>
+    <color name="colorBackPale">#FAFBFA</color>
+    <color name="colorText">#4C4C4C</color>
+    <color name="colorDarkText">#313131</color>
+    <color name="colorDefaultText">#A0A0A0</color>
+
+    <color name="colorBotBarBack">#F7F7F7</color>
+    <color name="colorBotLine">#E5E5E5</color>
+    <color name="colorTopLine">#B1B1B1</color>
+
+    <color name="ThemeYellow">#FF9912</color>
+    <color name="ThemeGreen">#68CA78</color>
+    <color name="ThemeBlue">#4E9DED</color>
+    <color name="ThemePurple">#7B76DE</color>
+    <color name="ThemeOrange">#FD8D56</color>
+    <color name="ThemeBlack">#4C4C4C</color>
+
+    <!--灰色-->
+    <color name="gray">#666666</color>
+    <color name="gray1">#999999</color>
+    <color name="gray2">#CCCCCC</color>
+    <color name="gray3">#DDDDDD</color>
+    <color name="gray4">#F5F5F6</color>
+    <color name="color_e3e3e3">#E3E3E3</color>
+    <color name="bg_white">#ffffff</color>
+    <color name="press_grey">#f0f0f0</color>
+
+    <color name="colorViewBg">#f3f0ff</color>
+    <color name="calendar_circle_other_color">#dee1e2</color>
+    <color name="calendar_text_day">#000000</color>
+    <color name="calendar_header_day_background">#323453</color>
+    <color name="calendar_text_past_day">#6c000000</color>
+    <color name="calendar_circle_current_color">#03A9F4</color>
+    <color name="white">#ffff</color>
+    <color name="lightGrey">#E2E2E2</color>
+    <color name="middleLightGrey">#F6F6F6</color>
+    <color name="grey">#999999</color>
+    <color name="black">#000000</color>
+
+    <color name="deepBlue">#00548A</color>
+    <color name="red">#FF0000</color>
+    <color name="lightRed">#FF3D3D</color>
+    <color name="transparentRed">#AAFF0000</color>
+    <color name="deepYellow">#FFBB38</color>
+    <color name="middleOrange">#FF9900</color>
+    <color name="orange">#FF6600</color>
+    <color name="lightGreen">#68d4b2</color>
+    <color name="lightOrange">#ffa861</color>
+    <color name="pink">#fc6c6c</color>
+    <color name="lightBlue">#d7e3f7</color>
+
+    <!--以下为聊天界面配色-->
+    <!-- 其它背景色或分割线相关 -->
+    <color name="bg_content">#f3f3f3</color>
+    <color name="divider_line">#d9d9d9</color>
+
+    <!-- 字体色 -->
+    <color name="text_title">#1b1b1b</color>
+    <color name="text_content">#818181</color>
+    <color name="text_sub">#919191</color>
+    <color name="text_hint">#c7c7c7</color>
+    <color name="text_black">#2A2A2A</color>
+    <color name="text_blue">#5a9cfb</color>
+    <!--深黑色-->
+    <color name="lightBlack">#333333</color>
+    <!--透明黑-->
+    <color name="transparentLightBlack">#AA000000</color>
+    <!--透明-->
+    <color name="transparent">@android:color/transparent</color>
+    <!--深灰色-->
+    <color name="deepGrey">#6E6E6E</color>
+    <!--透明灰色-->
+    <color name="transparentGrey">#AA999999</color>
+    <!--<color name="transparentMiddleGrey">#AA666666</color>-->
+    <!--中灰色-->
+    <color name="middleGrey">#CCCCCC</color>
+    <!--透明中灰色-->
+    <color name="transparentMiddleGrey">#AACCCCCC</color>
+    <!--淡灰色-->
+    <color name="paleGrey">#F6F6F6</color>
+    <!--浅蓝色-->
+    <color name="middleBlue">#367ADB</color>
+    <!--透明蓝-->
+    <color name="transparentBlue">#B5EBFF</color>
+    <!--黑蓝色-->
+    <color name="blackBlue">#73A5B7</color>
+</resources>

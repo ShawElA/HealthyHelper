@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/rl_commonToolBar"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/iv_leftImg_commonToolBar"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:scaleType="fitXY"
+        android:src="@mipmap/ic_launcher"
+        android:padding="15dp"
+        />
+
+    <TextView
+        android:id="@+id/tv_leftTitle_commonToolBar"
+        style="@style/CommonToolBarTextViewStyle"
+        android:layout_alignParentLeft="true"
+        android:visibility="gone"
+        android:textSize="@dimen/toolbar_side_textSize"
+        android:padding="10dp"
+        />
+
+    <TextView
+        android:id="@+id/tv_middleTitle_commonToolBar"
+        style="@style/CommonToolBarTextViewStyle"
+        android:layout_centerInParent="true"
+        android:padding="10dp"
+        android:layout_width="250dp"
+        />
+
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/iv_rightImg_commonToolBar"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:scaleType="fitXY"
+        android:padding="15dp"
+        />
+    <TextView
+        android:id="@+id/tv_rightTitle_commonToolBar"
+        style="@style/CommonToolBarTextViewStyle"
+        android:layout_alignParentRight="true"
+        android:visibility="gone"
+        android:textSize="@dimen/toolbar_side_textSize"
+        android:padding="10dp"
+        />
+</RelativeLayout>

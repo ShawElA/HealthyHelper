@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.android.percent.support.PercentLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <com.example.healthyolder.view.TextViewPlus
+        app:layout_paddingPercent="3%w"
+        android:id="@+id/tvp_title_courseBriefItemLv"
+        style="@style/LeftTextViewPlusStyMineFrag"
+        android:drawableLeft="@mipmap/course_brief"
+        android:text="课程简介"
+        android:textColor="@color/middleBlue"/>
+    <TextView
+        android:id="@+id/tv_content_courseBriefItemLv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="3dp"
+        android:text="本次看出有发大幅度发的发发的发的发放的沸点发的发大幅度发大幅度"
+        android:textColor="@color/deepGrey"
+        app:layout_paddingBottomPercent="3%w"
+        app:layout_paddingLeftPercent="3%w"
+        app:layout_paddingRightPercent="3%w"
+        app:layout_textSizePercent="4.5%w"
+    />
+</com.zhy.android.percent.support.PercentLinearLayout>

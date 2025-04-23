@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.android.percent.support.PercentRelativeLayout
+    style="@style/CommonVerticalPercentLinearLayoutSty"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white">
+        <androidx.recyclerview.widget.RecyclerView
+            android:scrollbars="none"
+            android:listSelector="@color/transparent"
+            android:id="@+id/rv_comment_courseCommentFrag"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white">
+        </androidx.recyclerview.widget.RecyclerView>
+
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/iv_no_data"
+        android:layout_centerInParent="true"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@mipmap/no_data"
+        />
+</com.zhy.android.percent.support.PercentRelativeLayout>

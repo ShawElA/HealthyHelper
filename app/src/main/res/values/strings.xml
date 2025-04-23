@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">健康助手</string>
+
+    <string name="setting_account">我的资料</string>
+    <string name="setting_setup">密码设置</string>
+    <string name="setting_about">关于</string>
+    <string name="setting_logout">退出登陆</string>
+    <string name="setting_setup_del">账号和系统设置</string>
+    <string name="loginSuccessfully">操作成功</string>
+    <string name="loginUnsuccessfully">操作失败</string>
+    <string name="registerSuccessfully">注册成功</string>
+    <string name="registerUnsuccessfully">注册失败</string>
+    <string name="loadUnsuccessfully">加载失败，请检查网络</string>
+    <string name="loadSuccessfully">操作成功</string>
+    <string name="loadUnsuccessfulAboutParams">操作失败，请检查请求参数或链接</string>
+</resources>
