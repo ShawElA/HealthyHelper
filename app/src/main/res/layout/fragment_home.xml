@@ -46,20 +46,20 @@
         android:layout_margin="20dp">
 
         <TextView
-            android:layout_weight="1"
             android:id="@+id/tv_test"
-            android:layout_gravity="center_horizontal"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="25dp"
-            android:text="抑郁自测"
-            android:textSize="25sp"
-            android:textColor="@color/colorLight"
-            android:background="@drawable/bg_btn_purple_circle"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
             android:layout_marginRight="10dp"
-            android:layout_height="match_parent" />
+            android:layout_weight="1"
+            android:background="@drawable/bg_btn_purple_circle"
+            android:paddingLeft="5dp"
+            android:paddingTop="2dp"
+            android:paddingRight="25dp"
+            android:paddingBottom="2dp"
+            android:text="抑郁自测"
+            android:textColor="@color/colorLight"
+            android:textSize="25sp" />
 
         <LinearLayout
             android:layout_marginLeft="10dp"

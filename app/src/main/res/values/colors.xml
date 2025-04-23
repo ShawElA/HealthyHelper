@@ -4,10 +4,10 @@
     <color name="colorPrimaryDark">#67AEF5</color>
     <color name="colorAccent">#67AEF5</color>
 
-    <color name="colorTheme">#67AEF5</color>
+    <color name="colorTheme">#8B54E6</color>
     <color name="colorThemePale">#B3D3F3</color>
     <color name="colorDark">#000106</color>
-    <color name="colorLight">#FEFEFE</color>
+    <color name="colorLight">#FFFFFF</color>
     <color name="colorBack">#F8F8F8</color>
     <color name="colorBackPale">#FAFBFA</color>
     <color name="colorText">#4C4C4C</color>
@@ -18,11 +18,11 @@
     <color name="colorBotLine">#E5E5E5</color>
     <color name="colorTopLine">#B1B1B1</color>
 
-    <color name="ThemeYellow">#FF9912</color>
-    <color name="ThemeGreen">#68CA78</color>
+    <color name="ThemeYellow">#D745C8</color>
+    <color name="ThemeGreen">#41BC37</color>
     <color name="ThemeBlue">#4E9DED</color>
-    <color name="ThemePurple">#7B76DE</color>
-    <color name="ThemeOrange">#FD8D56</color>
+    <color name="ThemePurple">#55B4AB</color>
+    <color name="ThemeOrange">#8957E4</color>
     <color name="ThemeBlack">#4C4C4C</color>
 
     <!--灰色-->
