@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.example.healthyolder.BaseApplication;
 import com.example.healthyolder.R;
+import com.example.healthyolder.activity.HealthyTestActivity;
 import com.example.healthyolder.adapter.CommonAdapter;
 import com.example.healthyolder.adapter.ViewHolder;
 import com.example.healthyolder.bean.MethodResult;
@@ -94,9 +95,25 @@ public class TestItemFragment extends Fragment {
                     holder.getView(R.id.rl_edit_pwd).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            //根据第一项1分，第二项2分以此类推，但代码中都是以0开始，所以加1
-                            BaseApplication.GoalMap.put(mIndex, holder.getAbsoluteAdapterPosition() + 1 + "");
+                            // 检查当前选项是否已经被选中
+                            boolean isAlreadySelected = false;
+                            if (TextUtil.isValidate(BaseApplication.GoalMap.get(mIndex))) {
+                                int score = Integer.valueOf(BaseApplication.GoalMap.get(mIndex));
+                                int selectedPosition = 4 - score;
+                                if (selectedPosition == holder.getAbsoluteAdapterPosition()) {
+                                    isAlreadySelected = true;
+                                }
+                            }
+                            
+                            //A、B、C、D选项分数递减
+                            BaseApplication.GoalMap.put(mIndex, (4 - holder.getAbsoluteAdapterPosition()) + "");
                             adapter.notifyDataSetChanged();
+                            
+                            // 如果该选项已经被选中，则自动进入下一题
+                            if (isAlreadySelected && getActivity() instanceof HealthyTestActivity) {
+                                HealthyTestActivity activity = (HealthyTestActivity) getActivity();
+                                activity.goToNextQuestion();
+                            }
                         }
                     });
 
@@ -111,8 +128,9 @@ public class TestItemFragment extends Fragment {
 
     private void refreshLayout(int position, ImageView imageView){
         if (TextUtil.isValidate(BaseApplication.GoalMap.get(mIndex))){
-            int mPosition = Integer.valueOf(BaseApplication.GoalMap.get(mIndex)) -1;
-            if (mPosition == position){
+            int score = Integer.valueOf(BaseApplication.GoalMap.get(mIndex));
+            int selectedPosition = 4 - score;
+            if (selectedPosition == position){
                 imageView.setVisibility(View.VISIBLE);
                 return;
             }

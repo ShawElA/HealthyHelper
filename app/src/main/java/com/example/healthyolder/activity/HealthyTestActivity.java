@@ -193,4 +193,28 @@ public class HealthyTestActivity extends BaseActivity {
     public void refresh(RefreshEvent event){
 
     }
+    
+    /**
+     * 进入下一题的方法，供Fragment调用
+     */
+    public void goToNextQuestion() {
+        // 如果不是最后一题，就进入下一题
+        if (locationIndex < arrayList.size() - 1) {
+            locationIndex++;
+            addViewPager.setCurrentItem(locationIndex);
+        } else {
+            // 如果是最后一题并且所有题目都已完成
+            if (BaseApplication.GoalMap.size() == 20) {
+                new XPopup.Builder(HealthyTestActivity.this)
+                        .asConfirm("测试已结束", disposeGoal(), new OnConfirmListener() {
+                            @Override
+                            public void onConfirm() {
+                                uploadGoal(Math.round(userGoal) + "");
+                            }
+                        }).show();
+            } else {
+                ToastUtil.showBottomToast("您还有测试题未答完");
+            }
+        }
+    }
 }

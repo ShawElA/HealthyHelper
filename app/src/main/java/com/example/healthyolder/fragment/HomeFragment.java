@@ -77,15 +77,25 @@ public class HomeFragment extends Fragment {
                 IntentUtil.startActivity(getActivity(), MainActivity.class, args);
             }
         } else if (currentScore < 70) {
-            // 疑中度抑郁，跳转到心理治疗相关页面
-            IntentUtil.startActivity(getActivity(), CommonActivity.class);
-        } else if (currentScore < 80) {
-            // 疑轻度抑郁，跳转到生活方式调整页面
-            // 这里可以替换为实际的生活方式建议页面
-            ToastUtil.showBottomToast("跳转到生活方式调整页面");
+            // 疑中度抑郁，跳转到智能医生聊天（咨询）界面
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).switchToConsultPage();
+            } else {
+                ToastUtil.showBottomToast("即将前往智能医生聊天界面");
+                Bundle args = new Bundle();
+                args.putInt("tabIndex", 1); // 智能医生聊天在底部导航中的索引
+                IntentUtil.startActivity(getActivity(), MainActivity.class, args);
+            }
         } else {
-            // 无或最低限度抑郁症状，可以跳转到健康生活习惯页面
-            ToastUtil.showBottomToast("跳转到健康生活习惯页面");
+            // 疑轻度抑郁或"无或最低限度抑郁症状"，跳转到赋能减压界面
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).switchToEmpowerPage();
+            } else {
+                ToastUtil.showBottomToast("即将前往赋能减压界面");
+                Bundle args = new Bundle();
+                args.putInt("tabIndex", 3); // 赋能减压在底部导航中的索引
+                IntentUtil.startActivity(getActivity(), MainActivity.class, args);
+            }
         }
     }
 

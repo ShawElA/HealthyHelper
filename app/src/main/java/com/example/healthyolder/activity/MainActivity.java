@@ -50,6 +50,26 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    /**
+     * 切换到智能医生聊天（咨询）页面
+     */
+    public void switchToConsultPage() {
+        if (navigationBar != null) {
+            // 智能医生聊天在底部导航中是第二个选项，索引为1
+            navigationBar.selectTab(1);
+        }
+    }
+
+    /**
+     * 切换到赋能减压页面
+     */
+    public void switchToEmpowerPage() {
+        if (navigationBar != null) {
+            // 赋能减压在底部导航中是第四个选项，索引为3
+            navigationBar.selectTab(3);
+        }
+    }
+
     private void initNav() {
         fragments.add(new HomeFragment());
         fragments.add(new CalculateFragment());
