@@ -29,6 +29,25 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         //底部导航
         initNav();
+        
+        // 检查是否有来自其他页面的跳转指令
+        if (getIntent().hasExtra("Bundle")) {
+            Bundle bundle = getIntent().getBundleExtra("Bundle");
+            if (bundle != null && bundle.containsKey("tabIndex")) {
+                int tabIndex = bundle.getInt("tabIndex", 0);
+                navigationBar.selectTab(tabIndex);
+            }
+        }
+    }
+
+    /**
+     * 切换到预约挂号页面
+     */
+    public void switchToAppointmentPage() {
+        if (navigationBar != null) {
+            // 预约挂号在底部导航中是第三个选项，索引为2
+            navigationBar.selectTab(2);
+        }
     }
 
     private void initNav() {

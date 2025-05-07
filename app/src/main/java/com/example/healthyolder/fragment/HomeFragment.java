@@ -9,10 +9,12 @@ import android.widget.TextView;
 import com.example.healthyolder.R;
 import com.example.healthyolder.activity.CommonActivity;
 import com.example.healthyolder.activity.HealthyTestActivity;
+import com.example.healthyolder.activity.MainActivity;
 import com.example.healthyolder.bean.RefreshEvent;
 import com.example.healthyolder.util.IntentUtil;
 import com.example.healthyolder.util.PreferenceUtil;
 import com.example.healthyolder.util.TextUtil;
+import com.example.healthyolder.util.ToastUtil;
 import com.example.healthyolder.view.SportStepView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -33,6 +35,7 @@ public class HomeFragment extends Fragment {
     SportStepView sportStepCount;
     @BindView(R.id.sportStepCountInfo)
     TextView sportStepCountInfo;
+    private int currentScore = 0; // 存储当前分数
 
     public static HomeFragment newInstance() {
 
@@ -57,6 +60,35 @@ public class HomeFragment extends Fragment {
     public void test2(){
 
     }
+
+    @OnClick(R.id.sportStepCountInfo)
+    public void onScoreInfoClick() {
+        // 根据分数区间跳转到不同页面
+        if (currentScore < 60) {
+            // 疑重度抑郁，跳转到预约挂号界面
+            // 通过MainActivity的底部导航切换到预约挂号页面（索引为2）
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).switchToAppointmentPage();
+            } else {
+                ToastUtil.showBottomToast("即将前往预约挂号界面");
+                // 如果不在MainActivity中，可以直接启动MainActivity并传入参数指定跳转到预约挂号页
+                Bundle args = new Bundle();
+                args.putInt("tabIndex", 2); // 预约挂号在底部导航中的索引
+                IntentUtil.startActivity(getActivity(), MainActivity.class, args);
+            }
+        } else if (currentScore < 70) {
+            // 疑中度抑郁，跳转到心理治疗相关页面
+            IntentUtil.startActivity(getActivity(), CommonActivity.class);
+        } else if (currentScore < 80) {
+            // 疑轻度抑郁，跳转到生活方式调整页面
+            // 这里可以替换为实际的生活方式建议页面
+            ToastUtil.showBottomToast("跳转到生活方式调整页面");
+        } else {
+            // 无或最低限度抑郁症状，可以跳转到健康生活习惯页面
+            ToastUtil.showBottomToast("跳转到健康生活习惯页面");
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -72,13 +104,14 @@ public class HomeFragment extends Fragment {
 
     private void initData(){
         if (TextUtil.isValidate(PreferenceUtil.getString("goal"))){
-            sportStepCount.setCurrentCount(100, Integer.valueOf(PreferenceUtil.getString("goal")));
-            changeHint(Integer.valueOf(PreferenceUtil.getString("goal")));
+            currentScore = Integer.valueOf(PreferenceUtil.getString("goal"));
+            sportStepCount.setCurrentCount(100, currentScore);
+            changeHint(currentScore);
         }
-
     }
 
     private void changeHint(int g){
+        currentScore = g;
         if (g < 60){
             sportStepCountInfo.setText("疑重度抑郁，请遵从医嘱进行治疗");
         }else if (g < 70){
