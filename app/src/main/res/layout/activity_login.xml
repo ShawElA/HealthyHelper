@@ -3,76 +3,115 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
+    android:background="@color/colorLight"
     android:fitsSystemWindows="true">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="56dp"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp">
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:gravity="center_horizontal">
 
-        <ImageView android:src="@mipmap/nav_logo"
-            android:layout_width="82dp"
-            android:layout_height="82dp"
-            android:layout_marginBottom="24dp"
-            android:layout_gravity="center_horizontal" />
+        <!-- App Logo -->
+        <ImageView 
+            android:src="@mipmap/nav_logo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="48dp"
+            android:layout_marginBottom="36dp" />
 
+        <!-- Welcome Text -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="欢迎回来"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorDark"
+            android:gravity="center"
+            android:layout_marginBottom="32dp"/>
+
+        <!-- Username Input -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textColorHint="@color/colorDark"
-            android:layout_marginBottom="8dp"
-            >
+            android:layout_marginBottom="16dp"
+            app:boxStrokeColor="@color/colorTheme"
+            app:hintTextColor="@color/colorTheme"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            
             <EditText
                 android:id="@+id/et_account"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
                 android:textColor="@color/colorDark"
+                android:padding="16dp"
+                android:drawableStart="@drawable/ic_person"
+                android:drawablePadding="8dp"
                 android:hint="账号" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Password Input -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColorHint="@color/colorDark"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="24dp"
+            app:boxStrokeColor="@color/colorTheme"
+            app:hintTextColor="@color/colorTheme"
+            app:passwordToggleEnabled="true"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            
             <EditText
                 android:id="@+id/et_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:textColor="@color/colorDark"
+                android:padding="16dp"
+                android:drawableStart="@drawable/ic_lock"
+                android:drawablePadding="8dp"
                 android:hint="密码"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Login Button with Elevation -->
         <androidx.appcompat.widget.AppCompatButton
-            android:enabled="true"
             android:id="@+id/btn_login"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="24dp"
-            android:padding="12dp"
+            android:padding="16dp"
             android:background="@drawable/bg_btn_theme_pale_circle"
             android:textColor="@color/white"
-            android:textSize="22sp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:elevation="4dp"
             android:text="登录"/>
 
+        <!-- Register Text -->
         <TextView
             android:id="@+id/tv_register"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:textColor="@color/colorPrimaryDark"
-            android:text="没有密码？赶紧注册一个"
+            android:layout_marginBottom="32dp"
+            android:textColor="@color/colorTheme"
+            android:text="没有账号？点击注册"
+            android:textSize="16sp"/>
+
+        <!-- Footer -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="健康助手 © 2023"
+            android:textColor="@color/gray1"
             android:gravity="center"
-            android:textSize="16dip"/>
+            android:layout_marginTop="48dp"
+            android:textSize="12sp"/>
 
     </LinearLayout>
 </ScrollView>

@@ -17,4 +17,8 @@
     <dimen name="message_margin">10dp</dimen>
     <dimen name="icon_width">45dp</dimen>
     <dimen name="icon_height">45dp</dimen>
+    
+    <!-- Standard Activity Margins -->
+    <dimen name="activity_horizontal_margin">24dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
 </resources>
