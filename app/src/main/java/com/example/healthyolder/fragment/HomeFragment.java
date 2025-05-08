@@ -58,7 +58,14 @@ public class HomeFragment extends Fragment {
 
     @OnClick(R.id.tv_test2)
     public void test2(){
-
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).switchToEmpowerPage();
+        } else {
+            ToastUtil.showBottomToast("即将前往赋能减压界面");
+            Bundle args = new Bundle();
+            args.putInt("tabIndex", 3); // 赋能减压在底部导航中的索引
+            IntentUtil.startActivity(getActivity(), MainActivity.class, args);
+        }
     }
 
     @OnClick(R.id.sportStepCountInfo)

@@ -95,7 +95,7 @@
                 android:paddingTop="2dp"
                 android:paddingRight="25dp"
                 android:paddingBottom="2dp"
-                android:text="抑郁自测"
+                android:text="赋能减压"
                 android:textColor="@color/colorLight"
                 android:textSize="25sp" />
         </LinearLayout>

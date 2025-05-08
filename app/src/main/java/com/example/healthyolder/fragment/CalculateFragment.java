@@ -30,6 +30,8 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,10 +63,14 @@ public class CalculateFragment extends Fragment{
     RelativeLayout rl_comment;
     @BindView(R.id.et_comment)
     EditText et_comment;
+    @BindView(R.id.btn_send)
+    View btn_send;
+    
     private List<ChatResult.DataBean> arrayList = new ArrayList<>();
     private CommonAdapter<ChatResult.DataBean> adapter;
     private String gid = "1";
     private String gName = "与智能医生聊天";
+    private boolean isProcessing = false;
 
     public static CalculateFragment newInstance(String param1, String param2) {
         CalculateFragment fragment = new CalculateFragment();
@@ -76,13 +82,63 @@ public class CalculateFragment extends Fragment{
 
     @OnClick(R.id.btn_send)
     public void send(){
+        if (isProcessing) {
+            ToastUtil.showBottomToast("请等待上一条消息处理完成");
+            return;
+        }
+        
         if (TextUtil.isValidate(et_comment.getText().toString())){
-            submitMsg(BaseApplication.getUserId(), et_comment.getText().toString());
-            getGPTResponse(et_comment.getText().toString());
-        }else {
+            String userMessage = et_comment.getText().toString();
+            // 先发送用户消息
+            submitMsg(BaseApplication.getUserId(), userMessage);
+            // 禁用发送按钮，显示处理中状态
+            setProcessingState(true);
+            // 然后请求GPT响应
+            getGPTResponse(userMessage);
+        } else {
             ToastUtil.showBottomToast("请输入您的问题");
         }
         et_comment.setText("");
+    }
+
+    private void setProcessingState(boolean processing) {
+        isProcessing = processing;
+        btn_send.setEnabled(!processing);
+        
+        // 如果正在处理，添加一个临时的"正在输入..."消息
+        if (processing) {
+            addTypingIndicator();
+        } else {
+            removeTypingIndicator();
+        }
+    }
+    
+    private void addTypingIndicator() {
+        // 临时添加一个"医生正在输入..."的消息
+        ChatResult.DataBean typingIndicator = new ChatResult.DataBean();
+        typingIndicator.setC_uid("-1"); // AI的ID
+        typingIndicator.setC_remark("医生正在思考...");
+        typingIndicator.setC_date(System.currentTimeMillis() + "");
+        typingIndicator.setTemp_id("typing_indicator");
+        
+        arrayList.add(typingIndicator);
+        if (adapter != null) {
+            adapter.notifyItemInserted(arrayList.size() - 1);
+            rv_comment.scrollToPosition(arrayList.size() - 1);
+        }
+    }
+    
+    private void removeTypingIndicator() {
+        // 移除所有临时消息
+        for (int i = arrayList.size() - 1; i >= 0; i--) {
+            ChatResult.DataBean item = arrayList.get(i);
+            if (item.getTemp_id() != null && item.getTemp_id().equals("typing_indicator")) {
+                arrayList.remove(i);
+                if (adapter != null) {
+                    adapter.notifyItemRemoved(i);
+                }
+            }
+        }
     }
 
     private void getGPTResponse(String question){
@@ -90,11 +146,18 @@ public class CalculateFragment extends Fragment{
         parameter.put("model", Configs.MODEL);
         parameter.put("prompt", question);
         parameter.put("max_tokens", Configs.MAX_TOKENS);
-        parameter.put("temperature",0);
+        parameter.put("temperature", 0);
+        
         OkHttpChatUtil.post(Urls.GPTURL, parameter, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setProcessingState(false);
+                        ToastUtil.showBottomToast("网络连接失败，请检查网络后重试");
+                    }
+                });
             }
 
             @Override
@@ -102,13 +165,36 @@ public class CalculateFragment extends Fragment{
                 String content = response.body().string().trim();
                 LogUtil.i("response", response.code() + "  " + content);
 
-                ChatGptResult result = new Gson().fromJson(content, ChatGptResult.class);
-                if (result != null){
-                    if (result.getChoices().get(0) != null && result.getChoices().size() != 0){
-                        LogUtil.i("reply", result.getChoices().get(0).getText().replace("\n", "").trim());
-                        submitMsg("-1", result.getChoices().get(0).getText().replace("\n", "").trim());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setProcessingState(false);
+                        
+                        if (response.code() != 200) {
+                            ToastUtil.showBottomToast("服务器返回错误，请稍后重试");
+                            return;
+                        }
+                        
+                        try {
+                            ChatGptResult result = new Gson().fromJson(content, ChatGptResult.class);
+                            if (result != null && result.getChoices() != null && !result.getChoices().isEmpty()){
+                                String aiResponse = result.getChoices().get(0).getText();
+                                if (aiResponse != null) {
+                                    // 清理返回的文本
+                                    aiResponse = aiResponse.replace("\n", "").trim();
+                                    submitMsg("-1", aiResponse);
+                                } else {
+                                    ToastUtil.showBottomToast("AI返回了空响应，请重新提问");
+                                }
+                            } else {
+                                ToastUtil.showBottomToast("解析AI响应失败，请重新提问");
+                            }
+                        } catch (Exception e) {
+                            ToastUtil.showBottomToast("处理AI响应时出错");
+                            LogUtil.i("GPT Error", e.getMessage());
+                        }
                     }
-                }
+                });
             }
         });
     }
@@ -124,12 +210,30 @@ public class CalculateFragment extends Fragment{
             public void onSuccess(EmptyResult response) {
                 if (response.isSuccess()){
                     initData();
+                } else {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ToastUtil.showBottomToast("消息发送失败，请重试");
+                                setProcessingState(false);
+                            }
+                        });
+                    }
                 }
             }
 
             @Override
             public void onFail(Call call, Exception e) {
-
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtil.showBottomToast("网络错误，请检查网络后重试");
+                            setProcessingState(false);
+                        }
+                    });
+                }
             }
         });
     }
@@ -148,6 +252,7 @@ public class CalculateFragment extends Fragment{
     }
 
     public void initData(){
+        srl_refresh.setRefreshing(true);
         HttpUtil.getResponse(Urls.SELECTCHAT, null, null, new ObjectCallBack<ChatResult>(ChatResult.class) {
             @Override
             public void onSuccess(ChatResult response) {
@@ -157,15 +262,16 @@ public class CalculateFragment extends Fragment{
                     initRecyclerView();
                 }else {
                     setLayoutVisible(View.VISIBLE, View.GONE);
+                    ToastUtil.showBottomToast("获取聊天记录失败");
                 }
             }
 
             @Override
             public void onFail(Call call, Exception e) {
-
+                srl_refresh.setRefreshing(false);
+                ToastUtil.showBottomToast("网络错误，请检查网络后重试");
             }
         });
-
     }
 
     public void initEvent(){
@@ -176,19 +282,26 @@ public class CalculateFragment extends Fragment{
                 initData();
             }
         });
-
     }
 
     //处理数据
     private void disposeCommentData(ChatResult result){
         arrayList.clear();
+        // 添加所有数据
         arrayList.addAll(result.getData());
+        
+        // 根据c_date（消息时间）对消息进行排序，确保消息按时间顺序显示
+        Collections.sort(arrayList, new Comparator<ChatResult.DataBean>() {
+            @Override
+            public int compare(ChatResult.DataBean msg1, ChatResult.DataBean msg2) {
+                return msg1.getC_date().compareTo(msg2.getC_date());
+            }
+        });
     }
 
     private void initRecyclerView(){
         if (adapter == null){
             rv_comment.setLayoutManager(new LinearLayoutManager(getContext()));
-            rv_comment.smoothScrollToPosition(arrayList.size() - 1);
             adapter = new CommonAdapter<ChatResult.DataBean>(getContext(), R.layout.item_chat_message, arrayList) {
                 @Override
                 public void convert(ViewHolder holder, ChatResult.DataBean o) {
@@ -198,18 +311,21 @@ public class CalculateFragment extends Fragment{
                     TextView tv_me = holder.getView(R.id.tv_me);
                     LinearLayout ll_other = holder.getView(R.id.ll_other);
                     LinearLayout ll_me = holder.getView(R.id.ll_me);
+                    
+                    // 检查消息发送者
+                    // 如果消息是当前用户发送的，显示在右侧
                     if (o.getC_uid().equals(BaseApplication.getUserId())){
                         ll_me.setVisibility(View.VISIBLE);
                         ll_other.setVisibility(View.GONE);
                         tv_me.setText(o.getC_remark());
-                    }else {
+                    }
+                    // 如果消息是AI（-1）发送的，显示在左侧
+                    else {
                         ll_other.setVisibility(View.VISIBLE);
                         ll_me.setVisibility(View.GONE);
                         tv_other.setText(o.getC_remark());
                     }
-
                 }
-
             };
             rv_comment.setAdapter(adapter);
         } else{

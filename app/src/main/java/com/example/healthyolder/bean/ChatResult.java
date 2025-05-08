@@ -69,6 +69,15 @@ public class ChatResult {
         private String u_icon;
         private String u_mobile;
         private String u_time;
+        private String temp_id; // 用于临时消息标识，如"正在输入"提示
+
+        public String getTemp_id() {
+            return temp_id;
+        }
+
+        public void setTemp_id(String temp_id) {
+            this.temp_id = temp_id;
+        }
 
         public String getC_id() {
             return c_id;
