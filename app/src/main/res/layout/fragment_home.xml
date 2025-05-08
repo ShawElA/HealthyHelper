@@ -32,14 +32,6 @@
                 android:textSize="28sp"
                 android:textStyle="bold"/>
 
-            <ImageView
-                android:id="@+id/iv_notification"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@android:drawable/ic_popup_reminder"
-                app:tint="@color/colorTheme"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="4dp"/>
         </LinearLayout>
 
         <!-- Health Score Card -->
