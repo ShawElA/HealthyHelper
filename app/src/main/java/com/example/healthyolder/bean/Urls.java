@@ -5,7 +5,7 @@ public class Urls {
     //public static final String baseUrl = "http://192.168.43.144:8070/";
     //校园网
     public static final String baseUrl = "http://172.28.128.174:8070/";
-    public static final String GPTURL = "https://api.rcouyi.com/v1/completions";
+    public static final String GPTURL = "https://api.deepseek.com/v1/chat/completions";
 
     public static final String LOGIN = baseUrl + "login";                   //登录
     public static final String REGISTER = baseUrl + "register";                   //注册

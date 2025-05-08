@@ -17,9 +17,9 @@ public class OkHttpChatUtil {
 
     static {
         client = new OkHttpClient.Builder()
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
                 .build();
     }
 
@@ -36,9 +36,11 @@ public class OkHttpChatUtil {
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringBuffer.toString());
         Request request = new Request.Builder()
                 .addHeader("Authorization", "Bearer " + Configs.API_KEY)
+                .addHeader("Content-Type", "application/json")
                 .url(url)
                 .post(body)
                 .build();
+        LogUtil.i("LLM Request", "URL: " + url + ", Params: " + new Gson().toJson(params));
         client.newCall(request).enqueue(callback);
     }
 

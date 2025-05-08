@@ -17,6 +17,8 @@ import com.example.healthyolder.adapter.ViewHolder;
 import com.example.healthyolder.bean.ChatGptResult;
 import com.example.healthyolder.bean.ChatResult;
 import com.example.healthyolder.bean.Configs;
+import com.example.healthyolder.bean.DeepseekChatResult;
+import com.example.healthyolder.bean.DeepseekResult;
 import com.example.healthyolder.bean.EmptyResult;
 import com.example.healthyolder.bean.Urls;
 import com.example.healthyolder.util.HttpUtil;
@@ -89,10 +91,16 @@ public class CalculateFragment extends Fragment{
         
         if (TextUtil.isValidate(et_comment.getText().toString())){
             String userMessage = et_comment.getText().toString();
-            // 先发送用户消息
-            submitMsg(BaseApplication.getUserId(), userMessage);
+            
+            // 先添加用户消息到UI上, 但不从服务器刷新
+            addLocalUserMessage(userMessage);
+            
+            // 然后发送到服务器
+            submitMsgToServer(BaseApplication.getUserId(), userMessage);
+            
             // 禁用发送按钮，显示处理中状态
             setProcessingState(true);
+            
             // 然后请求GPT响应
             getGPTResponse(userMessage);
         } else {
@@ -144,9 +152,25 @@ public class CalculateFragment extends Fragment{
     private void getGPTResponse(String question){
         Map<String, Object> parameter = new HashMap<>();
         parameter.put("model", Configs.MODEL);
-        parameter.put("prompt", question);
+        
+        // 构造messages数组
+        List<Map<String, String>> messages = new ArrayList<>();
+        
+        // 添加系统消息
+        Map<String, String> systemMessage = new HashMap<>();
+        systemMessage.put("role", "system");
+        systemMessage.put("content", "你是一个专业的医生助手，你专门面向老年人抑郁症患者或潜在患者，请以专业、友好的口吻回答用户的健康问题。");
+        messages.add(systemMessage);
+        
+        // 添加用户消息
+        Map<String, String> userMessage = new HashMap<>();
+        userMessage.put("role", "user");
+        userMessage.put("content", question);
+        messages.add(userMessage);
+        
+        parameter.put("messages", messages);
         parameter.put("max_tokens", Configs.MAX_TOKENS);
-        parameter.put("temperature", 0);
+        parameter.put("temperature", 0.2); // 稍微提高一点创造性
         
         OkHttpChatUtil.post(Urls.GPTURL, parameter, new Callback() {
             @Override
@@ -156,6 +180,7 @@ public class CalculateFragment extends Fragment{
                     public void run() {
                         setProcessingState(false);
                         ToastUtil.showBottomToast("网络连接失败，请检查网络后重试");
+                        LogUtil.i("Deepseek Error", "Network error: " + e.getMessage());
                     }
                 });
             }
@@ -172,26 +197,33 @@ public class CalculateFragment extends Fragment{
                         
                         if (response.code() != 200) {
                             ToastUtil.showBottomToast("服务器返回错误，请稍后重试");
+                            LogUtil.i("Deepseek Error", "HTTP error: " + response.code() + " - " + content);
                             return;
                         }
                         
                         try {
-                            ChatGptResult result = new Gson().fromJson(content, ChatGptResult.class);
+                            DeepseekChatResult result = new Gson().fromJson(content, DeepseekChatResult.class);
                             if (result != null && result.getChoices() != null && !result.getChoices().isEmpty()){
-                                String aiResponse = result.getChoices().get(0).getText();
-                                if (aiResponse != null) {
-                                    // 清理返回的文本
-                                    aiResponse = aiResponse.replace("\n", "").trim();
-                                    submitMsg("-1", aiResponse);
+                                DeepseekChatResult.ChoicesBean.MessageBean message = result.getChoices().get(0).getMessage();
+                                if (message != null && message.getContent() != null) {
+                                    String aiResponse = message.getContent().trim();
+                                    
+                                    // 先在UI上显示AI回复
+                                    addLocalAIMessage(aiResponse);
+                                    
+                                    // 然后在后台发送到服务器
+                                    submitMsgToServer("-1", aiResponse);
                                 } else {
                                     ToastUtil.showBottomToast("AI返回了空响应，请重新提问");
+                                    LogUtil.i("Deepseek Error", "Empty message content");
                                 }
                             } else {
                                 ToastUtil.showBottomToast("解析AI响应失败，请重新提问");
+                                LogUtil.i("Deepseek Error", "Failed to parse response: " + content);
                             }
                         } catch (Exception e) {
                             ToastUtil.showBottomToast("处理AI响应时出错");
-                            LogUtil.i("GPT Error", e.getMessage());
+                            LogUtil.i("Deepseek Error", "Exception: " + e.getMessage());
                         }
                     }
                 });
@@ -199,7 +231,66 @@ public class CalculateFragment extends Fragment{
         });
     }
 
-    private void submitMsg(String uid, String content){
+    // 添加本地消息显示，不从服务器刷新
+    private void addLocalUserMessage(String message) {
+        ChatResult.DataBean localMsg = new ChatResult.DataBean();
+        localMsg.setC_uid(BaseApplication.getUserId());
+        localMsg.setC_remark(message);
+        localMsg.setC_date(System.currentTimeMillis() + "");
+        localMsg.setTemp_id("local_msg_" + System.currentTimeMillis());
+        
+        arrayList.add(localMsg);
+        if (adapter != null) {
+            adapter.notifyItemInserted(arrayList.size() - 1);
+            rv_comment.scrollToPosition(arrayList.size() - 1);
+        }
+    }
+    
+    // 添加本地AI回复，不从服务器刷新
+    private void addLocalAIMessage(String message) {
+        ChatResult.DataBean localMsg = new ChatResult.DataBean();
+        localMsg.setC_uid("-1"); // AI的ID
+        localMsg.setC_remark(message);
+        localMsg.setC_date(System.currentTimeMillis() + "");
+        localMsg.setTemp_id("local_ai_" + System.currentTimeMillis());
+        
+        arrayList.add(localMsg);
+        if (adapter != null) {
+            adapter.notifyItemInserted(arrayList.size() - 1);
+            rv_comment.scrollToPosition(arrayList.size() - 1);
+        }
+    }
+
+    // 只负责发送消息到服务器，不刷新UI
+    private void submitMsgToServer(String uid, String content){
+        Map<String, String> p = new HashMap<>();
+        p.put("g_id", gid);
+        p.put("remark", content);
+        p.put("u_id", uid);
+        p.put("type", "0");
+        HttpUtil.getResponse(Urls.SENDMESSAGE, p, null, new ObjectCallBack<EmptyResult>(EmptyResult.class) {
+            @Override
+            public void onSuccess(EmptyResult response) {
+                // 消息发送成功，但不立即刷新页面
+                // 这样可以保持"正在思考"的提示直到AI响应到达
+            }
+
+            @Override
+            public void onFail(Call call, Exception e) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtil.showBottomToast("网络错误，消息可能未保存");
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    // 保留原有submitMsg方法，但改名为submitMsg，用于支持旧代码
+    private void submitMsg(String uid, String content) {
         Map<String, String> p = new HashMap<>();
         p.put("g_id", gid);
         p.put("remark", content);
