@@ -13,4 +13,5 @@
     <string name="loadUnsuccessfully">加载失败，请检查网络</string>
     <string name="loadSuccessfully">操作成功</string>
     <string name="loadUnsuccessfulAboutParams">操作失败，请检查请求参数或链接</string>
+    <string name="doctor_default_intro">%1$s医生，%2$s专家，拥有丰富的临床经验，专注于提供专业医疗咨询和服务</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.example.healthyolder.adapter;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,12 +21,14 @@ public class TypeAdapter extends RecyclerView.Adapter<TypeAdapter.ViewHolder> {
     public TypeAdapter(AppointmentFragment activity, ArrayList<GoodsItem> dataList) {
         this.activity = activity;
         this.dataList = dataList;
+        if (dataList != null && dataList.size() > 0) {
+            selectTypeId = dataList.get(0).typeId;
+        }
     }
-
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_type,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_type, parent, false);
         ViewHolder holder = new ViewHolder(view);
         return holder;
     }
@@ -35,50 +36,67 @@ public class TypeAdapter extends RecyclerView.Adapter<TypeAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         GoodsItem item = dataList.get(position);
-
         holder.bindData(item);
     }
 
     @Override
     public int getItemCount() {
-        if(dataList==null){
+        if (dataList == null) {
             return 0;
         }
         return dataList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView tvCount,type;
+        TextView tvCount, type;
+        View selectedIndicator;
         private GoodsItem item;
+
         public ViewHolder(View itemView) {
             super(itemView);
-            tvCount = (TextView) itemView.findViewById(R.id.tvCount);
-            type = (TextView) itemView.findViewById(R.id.type);
+            tvCount = itemView.findViewById(R.id.tvCount);
+            type = itemView.findViewById(R.id.type);
+            selectedIndicator = itemView.findViewById(R.id.selectedIndicator);
             itemView.setOnClickListener(this);
         }
 
-        public void bindData(GoodsItem item){
+        public void bindData(GoodsItem item) {
             this.item = item;
             type.setText(item.typeName);
+            
             int count = activity.getSelectedGroupCountByTypeId(item.typeId);
             tvCount.setText(String.valueOf(count));
-            if(count<1){
+            
+            if (count < 1) {
                 tvCount.setVisibility(View.GONE);
-            }else{
+            } else {
                 tvCount.setVisibility(View.VISIBLE);
             }
-            if(item.typeId==selectTypeId){
-                itemView.setBackgroundColor(Color.WHITE);
-            }else{
-                itemView.setBackgroundColor(Color.TRANSPARENT);
+            
+            // Handle selected state
+            if (item.typeId == selectTypeId) {
+                type.setTextColor(itemView.getContext().getResources().getColor(android.R.color.black));
+                type.setTextSize(16);
+                type.setTypeface(null, android.graphics.Typeface.BOLD);
+                selectedIndicator.setVisibility(View.VISIBLE);
+                itemView.setBackgroundResource(R.color.white);
+            } else {
+                type.setTextColor(itemView.getContext().getResources().getColor(android.R.color.darker_gray));
+                type.setTextSize(14);
+                type.setTypeface(null, android.graphics.Typeface.NORMAL);
+                selectedIndicator.setVisibility(View.INVISIBLE);
+                itemView.setBackgroundResource(android.R.color.transparent);
             }
-
         }
 
         @Override
         public void onClick(View v) {
-            activity.onTypeClicked(item.typeId);
+            if (selectTypeId != item.typeId) {
+                selectTypeId = item.typeId;
+                notifyDataSetChanged();
+                activity.onTypeClicked(item.typeId);
+            }
         }
     }
 }
