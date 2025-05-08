@@ -159,7 +159,7 @@ public class CalculateFragment extends Fragment{
         // 添加系统消息
         Map<String, String> systemMessage = new HashMap<>();
         systemMessage.put("role", "system");
-        systemMessage.put("content", "你是一个专业的医生助手，你专门面向老年人抑郁症患者或潜在患者，请以专业、友好的口吻回答用户的健康问题。");
+        systemMessage.put("content", "你是一个专业的医生助手，你专门面向老年人抑郁症患者或潜在患者，请以专业、友好的口吻回答用户的健康问题，不时对用户进行鼓励。");
         messages.add(systemMessage);
         
         // 添加用户消息
@@ -170,7 +170,7 @@ public class CalculateFragment extends Fragment{
         
         parameter.put("messages", messages);
         parameter.put("max_tokens", Configs.MAX_TOKENS);
-        parameter.put("temperature", 0.2); // 稍微提高一点创造性
+        parameter.put("temperature", 0.2); // 温度0.3以下，否则指令遵循度太低
         
         OkHttpChatUtil.post(Urls.GPTURL, parameter, new Callback() {
             @Override
