@@ -3,17 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f3f3f3"
+    android:background="@color/colorBackPale"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:agendaCalendar="http://schemas.android.com/apk/res-auto">
-
 
     <com.example.healthyolder.view.CommonToolBar
         android:id="@+id/ctb_title"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
-        android:background="@color/white"
+        android:background="@color/colorTheme"
+        android:elevation="4dp"
         />
 
     <RelativeLayout
@@ -22,12 +22,10 @@
         android:layout_height="match_parent">
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/rl_comment"
-            android:id="@+id/srl_refresh"
-            >
+            android:id="@+id/srl_refresh">
 
             <RelativeLayout
                 android:orientation="vertical"
@@ -37,12 +35,26 @@
                     android:id="@+id/rl_no_data"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
-                    <ImageView
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:background="@mipmap/no_data"
-                        android:layout_centerInParent="true"
-                        />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:layout_centerInParent="true">
+                        <ImageView
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
+                            android:background="@mipmap/no_data"
+                            android:alpha="0.7"
+                            />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="暂无对话，开始提问吧"
+                            android:textColor="@color/gray1"
+                            android:layout_marginTop="12dp"
+                            android:textSize="16sp"/>
+                    </LinearLayout>
                 </RelativeLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -51,6 +63,9 @@
                     android:layout_height="match_parent"
                     android:id="@+id/rv_list"
                     android:fillViewport="true"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:clipToPadding="false"
                     android:scrollbars="none"
                     app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
@@ -60,43 +75,54 @@
         <View
             android:layout_above="@+id/rl_comment"
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#d9d9d9" />
+            android:layout_height="1dp"
+            android:background="@color/lightGrey" />
 
         <RelativeLayout
             android:id="@+id/rl_comment"
-            android:background="#f3f3f3"
+            android:background="@color/white"
             android:layout_alignParentBottom="true"
             android:paddingRight="16dp"
             android:paddingLeft="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:elevation="4dp"
             android:layout_width="match_parent"
-            android:layout_height="60dp">
+            android:layout_height="wrap_content"
+            android:minHeight="60dp">
 
             <EditText
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="12dp"
                 android:gravity="center_vertical"
-                android:paddingLeft="20dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:layout_centerHorizontal="true"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
+                android:minHeight="44dp"
+                android:maxHeight="100dp"
                 android:layout_toLeftOf="@+id/btn_send"
                 android:id="@+id/et_comment"
                 android:background="@drawable/message_shap_chat_bg"
                 android:hint="请输入您的问题"
+                android:textColorHint="@color/gray1"
                 android:layout_centerVertical="true"
-                android:textColor="@color/grey"/>
+                android:textColor="@color/text_black"
+                android:textSize="15sp"
+                android:inputType="textMultiLine"/>
 
-            <Button
+            <ImageButton
                 android:id="@+id/btn_send"
                 android:background="@drawable/bg_btn_green_circle"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:text="发送"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:src="@android:drawable/ic_menu_send"
+                android:tint="@color/white"
+                android:contentDescription="发送"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:textColor="@color/white"
-                android:textSize="20sp"
                 />
         </RelativeLayout>
     </RelativeLayout>
