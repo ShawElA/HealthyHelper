@@ -10,9 +10,6 @@ import com.example.healthyolder.BaseApplication;
 import com.example.healthyolder.R;
 import com.example.healthyolder.util.ScreenUtil;
 
-/**
- * Created by Administrator on 2021/6/2.
- */
 public class TextViewPlus extends TextView {
     public final static int LEFT_IMG = 0;
     public final static int TOP_IMG = 1;

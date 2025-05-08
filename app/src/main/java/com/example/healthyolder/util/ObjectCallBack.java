@@ -6,9 +6,6 @@ import com.zhy.http.okhttp.callback.Callback;
 import okhttp3.Call;
 import okhttp3.Response;
 
-/**
- * Created by marlon
- */
 public abstract class ObjectCallBack<T> extends Callback<T> {
     private Class<T> cls;
 

@@ -3,11 +3,6 @@ package com.next.easynavigation.utils;
 import android.content.Context;
 import android.view.WindowManager;
 
-
-/**
- * Created by Jue on 2016/3/29.
- * 常用小工具类
- */
 public class NavigationUtil {
 
     /**

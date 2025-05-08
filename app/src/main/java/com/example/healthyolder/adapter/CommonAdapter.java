@@ -8,9 +8,7 @@ import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-/**
- * Created by zhy
- */
+
 public abstract class CommonAdapter<T> extends RecyclerView.Adapter<ViewHolder>
 {
     protected Context mContext;

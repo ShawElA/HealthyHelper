@@ -30,9 +30,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
-/**
- * Created by Jue on 2018/6/1.
- */
 
 public class EasyNavigationBar extends LinearLayout {
 

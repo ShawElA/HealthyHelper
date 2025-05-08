@@ -4,9 +4,6 @@ import android.util.TypedValue;
 
 import com.example.healthyolder.BaseApplication;
 
-/**
- * Created by Administrator on 2021/6/14.
- */
 public class DensityUtil {
     public static int dip2px(float dpValue) {
         final float scale = BaseApplication.getContext().getResources().getDisplayMetrics().density;

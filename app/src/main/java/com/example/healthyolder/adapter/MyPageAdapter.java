@@ -6,9 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-/**
- * Created by Administrator on 2021/6/14.
- */
+
 public class MyPageAdapter extends FragmentPagerAdapter {
     private List<Fragment> fragmentList;
 

@@ -11,9 +11,6 @@ import java.util.Set;
 
 import okhttp3.MediaType;
 
-/**
- * Created by marlon
- */
 public class HttpUtil {
 
     private static final long CONNECT_TIMEOUT = 15000;

@@ -9,10 +9,6 @@ import com.example.healthyolder.R;
 
 import androidx.fragment.app.Fragment;
 
-
-/**
- * Created by Administrator
- */
 public class IntentUtil {
     private static long currentTime; //解决startActivityForResult导致SingleTop失效问题
 

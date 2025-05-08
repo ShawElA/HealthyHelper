@@ -12,9 +12,6 @@ import com.example.healthyolder.util.LogUtil;
 
 import java.util.Random;
 
-/**
- * Created by Administrator on 2021/10/15.
- */
 public class TickView extends View {
     private Paint paint;
     private RectF oval;

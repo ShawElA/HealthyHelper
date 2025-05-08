@@ -7,9 +7,7 @@ import com.example.healthyolder.R;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
-/**
- * Created by Administrator on 2021/6/16.
- */
+
 public class BaseFragmentAcy extends FragmentActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

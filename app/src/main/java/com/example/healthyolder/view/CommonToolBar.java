@@ -15,9 +15,7 @@ import com.example.healthyolder.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by Administrator on 2016/5/28.
- */
+
 public class CommonToolBar extends RelativeLayout {
     @BindView(R.id.rl_commonToolBar)
     RelativeLayout rl;

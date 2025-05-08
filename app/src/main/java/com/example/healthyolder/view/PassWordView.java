@@ -10,9 +10,7 @@ import android.view.View;
 import com.example.healthyolder.R;
 import com.example.healthyolder.util.DensityUtil;
 
-/**
- * Created by Administrator on 2021/11/2.
- */
+
 public class PassWordView extends View {
     private Paint paint; //画笔
     private boolean isFirstDraw = true;

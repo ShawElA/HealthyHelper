@@ -32,9 +32,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import okhttp3.Call;
 
-/**
- * Created by Administrator on 2025/12/9.
- */
+
 
 public class PayActivity extends BaseActivity {
 

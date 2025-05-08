@@ -15,9 +15,7 @@ import java.util.Map;
 
 import okhttp3.Call;
 
-/**
- * Created by Administrator on 2016/5/26.
- */
+
 public class BaseApplication extends Application {
 
     private static Context context;

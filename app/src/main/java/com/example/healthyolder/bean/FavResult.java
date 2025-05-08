@@ -4,11 +4,6 @@ import java.util.List;
 
 public class FavResult {
 
-    /**
-     * success : true
-     * data : {"f_id":"727284","fu_id":"56","fn_id":"475316"}
-     * result : 操作成功
-     */
 
     private boolean success;
     private List<DataBean> data;
@@ -39,11 +34,6 @@ public class FavResult {
     }
 
     public static class DataBean {
-        /**
-         * f_id : 727284
-         * fu_id : 56
-         * fn_id : 475316
-         */
 
         private String f_id;
         private String fu_id;

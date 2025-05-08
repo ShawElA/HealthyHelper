@@ -38,9 +38,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.Call;
 
-/**
- * Created by Administrator on 2021/6/11.
- */
+
 public class CourseCommentFrag extends Fragment {
     @BindView(R.id.rv_comment_courseCommentFrag)
     RecyclerView rv_comment;

@@ -40,12 +40,6 @@ public class AvailableInfo {
     }
 
     public static class DataBean {
-        /**
-         * a_id : 1
-         * a_uid : 2
-         * a_date : 2022-04-09
-         * a_num : 20
-         */
 
         private String a_id;
         private String a_uid;

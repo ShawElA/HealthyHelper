@@ -24,9 +24,6 @@ import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by Administrator on 2021/6/11.
- */
 public class DoctorBriefFrag extends Fragment {
     @BindView(R.id.lv_brief_courseBriefFrag)
     ListView lv_brief;

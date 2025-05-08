@@ -37,9 +37,6 @@ import butterknife.ButterKnife;
 import okhttp3.Call;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
-/**
- * Created by Administrator on 2025/9/7.
- */
 
 public class AppointmentFragment extends Fragment implements View.OnClickListener {
 

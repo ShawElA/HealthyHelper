@@ -5,9 +5,6 @@ import android.widget.Toast;
 
 import com.example.healthyolder.BaseApplication;
 
-/**
- * Created by Administrator
- */
 public class ToastUtil {
     private static Toast toast = null; //toast
 

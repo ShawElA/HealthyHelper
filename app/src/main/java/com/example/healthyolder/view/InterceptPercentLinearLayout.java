@@ -6,9 +6,7 @@ import android.view.MotionEvent;
 
 import com.zhy.android.percent.support.PercentLinearLayout;
 
-/**
- * Created by Administrator on 2021/10/29.
- */
+
 public class InterceptPercentLinearLayout extends PercentLinearLayout {
     boolean isIntercept = false;
 

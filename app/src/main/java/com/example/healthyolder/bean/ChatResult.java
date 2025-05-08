@@ -40,21 +40,6 @@ public class ChatResult {
     }
 
     public static class DataBean {
-        /**
-         * c_id : 1
-         * c_gid : 1
-         * c_remark : 我签到啦
-         * c_uid : 453452
-         * c_date : 2023-03-03 10:00:00
-         * c_type : 0
-         * u_id : 453452
-         * u_name : weven
-         * u_pwd : 123456
-         * u_email : 594771590@qq,com
-         * u_icon :
-         * u_mobile : 13750435172
-         * u_time : 2022-11-13
-         */
 
         private String c_id;
         private String c_gid;

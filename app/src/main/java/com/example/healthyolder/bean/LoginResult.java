@@ -5,12 +5,6 @@ import java.util.List;
 
 public class LoginResult {
 
-    /**
-     * success : true
-     * data : [{"u_id":"2","u_name":"杨天成","u_mobile":"18814118285","u_login_pwd":"123456","u_pay_pwd":"123456","u_power":"1","u_email":"","u_time":"0000-00-00 00:00:00","u_icon":"","u_department_id":"1","dd_id":"1","dd_name":"神经内科"},{"u_id":"4","u_name":"陈宇","u_mobile":"13750423724","u_login_pwd":"123456","u_pay_pwd":"123456","u_power":"1","u_email":"594771472@qq.com","u_time":"0000-00-00 00:00:00","u_icon":"","u_department_id":"1","dd_id":"1","dd_name":"神经内科"},{"u_id":"5","u_name":"郑永平","u_mobile":"13724274375","u_login_pwd":"123456","u_pay_pwd":"123456","u_power":"1","u_email":"45727367327@qq.com","u_time":"0000-00-00 00:00:00","u_icon":"","u_department_id":"3","dd_id":"3","dd_name":"心血管内科"},{"u_id":"6","u_name":"林浩","u_mobile":"13752373707","u_login_pwd":"123456","u_pay_pwd":"123456","u_power":"1","u_email":"44375273287@qq.com","u_time":"2022-03-23 23:37:19","u_icon":"","u_department_id":"5","dd_id":"5","dd_name":"血液内科"}]
-     * result : 获取成功
-     */
-
     private boolean success;
     private String result;
     private List<DataBean> data;

@@ -6,12 +6,6 @@ import java.util.List;
 
 public class CommentResult {
 
-    /**
-     * success : true
-     * data : [{"c_id":"348137","c_content":"This is a test","cu_id":"1","cn_id":"475316","c_date":"2021-09-14 10:27:30","u_id":"1","username":"weven","password":"123456","number":"18814118285","e-mail":"594771580@qq.com","icon":"https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3124289653,1178972108&fm=15&gp=0.jpg","u_sex":"1","u_date":"2020-01-20","u_level":"0"}]
-     * result : 获取成功
-     */
-
     private boolean success;
     private String result;
     private List<DataBean> data;
@@ -41,22 +35,6 @@ public class CommentResult {
     }
 
     public static class DataBean {
-        /**
-         * c_id : 348137
-         * c_content : This is a test
-         * cu_id : 1
-         * cn_id : 475316
-         * c_date : 2021-09-14 10:27:30
-         * u_id : 1
-         * username : weven
-         * password : 123456
-         * number : 18814118285
-         * e-mail : 594771580@qq.com
-         * icon : https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3124289653,1178972108&fm=15&gp=0.jpg
-         * u_sex : 1
-         * u_date : 2020-01-20
-         * u_level : 0
-         */
 
         private String c_id;
         private String c_content;
