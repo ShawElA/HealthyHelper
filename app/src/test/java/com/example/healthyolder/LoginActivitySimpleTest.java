@@ -3,8 +3,6 @@ package com.example.healthyolder;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import com.example.healthyolder.util.TextUtil;
-
 public class LoginActivitySimpleTest {
     
     /**
