@@ -170,7 +170,7 @@ public class CalculateFragment extends Fragment{
         
         parameter.put("messages", messages);
         parameter.put("max_tokens", Configs.MAX_TOKENS);
-        parameter.put("temperature", 0.2); // 温度0.3以下，否则指令遵循度太低
+        parameter.put("temperature", 0.2); // 温度还是0.3以下吧，否则指令遵循度太低
         
         OkHttpChatUtil.post(Urls.GPTURL, parameter, new Callback() {
             @Override
@@ -289,7 +289,7 @@ public class CalculateFragment extends Fragment{
         });
     }
 
-    // 保留原有submitMsg方法，但改名为submitMsg，用于支持旧代码
+    // 原有submitMsg方法，先留着，只支持ChatGPT
     private void submitMsg(String uid, String content) {
         Map<String, String> p = new HashMap<>();
         p.put("g_id", gid);
