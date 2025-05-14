@@ -28,4 +28,8 @@ public class Urls {
     public static final String SENDMESSAGE = baseUrl + "sendMessage";                   //发送消息
     public static final String GETFAVESSAY = baseUrl + "getFavEssay";              //点赞过的文章
     public static final String DETAILUSER = baseUrl + "selectAllUser";      //获取医生
+    
+    // 预约咨询实际接口
+    // public static final String GET_AVAILABLE_TIMES = baseUrl + "getAvailableTimes";   // 获取医生可预约时间
+    // public static final String CREATE_APPOINTMENT = baseUrl + "createAppointment";    // 创建预约
 }

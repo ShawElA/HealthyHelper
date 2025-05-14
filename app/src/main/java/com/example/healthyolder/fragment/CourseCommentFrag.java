@@ -87,6 +87,7 @@ public class CourseCommentFrag extends Fragment {
     }
 
     public void getCourseCommentInfo() {
+        // 当前采用模拟数据方式
         for (int j = 0; j < 7; j++){
             AvailableResult result = new AvailableResult();
             result.setDate(DateUtil.beforeAfterDate(j));
@@ -95,6 +96,49 @@ public class CourseCommentFrag extends Fragment {
             remarkInfos.add(result);
         }
         initRecyclerView();
+        
+        // 获取真实的医生可预约时间
+        /*
+        if (remarkInfos != null) {
+            remarkInfos.clear();
+        }
+        
+        Map<String, String> params = new HashMap<>();
+        params.put("doctor_id", doctorId);
+        
+        HttpUtil.getResponse(Urls.GET_AVAILABLE_TIMES, params, this, new ObjectCallBack<AvailableInfo>(AvailableInfo.class) {
+            @Override
+            public void onSuccess(AvailableInfo response) {
+                if (response != null && response.isSuccess()){
+                    List<AvailableInfo.DataBean> availableDataList = response.getData();
+                    if (availableDataList != null && !availableDataList.isEmpty()) {
+                        // 将API返回的AvailableInfo.DataBean对象转换为界面需要的AvailableResult对象
+                        for (AvailableInfo.DataBean dataBean : availableDataList) {
+                            AvailableResult result = new AvailableResult();
+                            result.setId(dataBean.getA_id());
+                            result.setDate(dataBean.getA_date());
+                            result.setNumber(dataBean.getA_num());
+                            result.setAvaiable(!dataBean.getA_num().equals("0")); // 如果余号为0则不可预约
+                            remarkInfos.add(result);
+                        }
+                        iv_no_data.setVisibility(View.GONE);
+                    } else {
+                        iv_no_data.setVisibility(View.VISIBLE);
+                    }
+                    initRecyclerView();
+                } else {
+                    ToastUtil.showBottomToast("获取预约时间失败");
+                    iv_no_data.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onFail(Call call, Exception e) {
+                ToastUtil.showBottomToast(R.string.loadUnsuccessfully);
+                iv_no_data.setVisibility(View.VISIBLE);
+            }
+        });
+        */
     }
 
     public void initRecyclerView(){

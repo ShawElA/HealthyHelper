@@ -153,9 +153,36 @@ public class PayActivity extends BaseActivity {
     }
 
     private void payOrder(){
+        // 当前采用模拟方式，直接显示支付成功
         operateDelay(true, "支付成功");
         EventBus.getDefault().post(new RefreshAddressEvent());
 
+        // 将实际提交预约信息到服务器
+        /*
+        Map<String, String> params = new HashMap<>();
+        params.put("doctor_id", BaseApplication.getDoctorId());
+        params.put("user_id", BaseApplication.getUserId());
+        params.put("date", bundle.getString("date", ""));
+        params.put("time_slot_id", bundle.getString("aid", ""));
+        params.put("payment_method", iv_wechat.getVisibility() == View.VISIBLE ? "wechat" : "alipay");
+        
+        HttpUtil.getResponse(Urls.CREATE_APPOINTMENT, params, this, new ObjectCallBack<CommonResult>(CommonResult.class) {
+            @Override
+            public void onSuccess(CommonResult response) {
+                if (response.isSuccess()) {
+                    operateDelay(true, "预约成功");
+                    EventBus.getDefault().post(new RefreshAddressEvent());
+                } else {
+                    operateDelay(false, response.getMessage());
+                }
+            }
+
+            @Override
+            public void onFail(Call call, Exception e) {
+                operateDelay(false, "预约失败，请重试");
+            }
+        });
+        */
     }
 
     //延迟操作
