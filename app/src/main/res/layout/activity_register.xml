@@ -10,9 +10,9 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="56dp"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp">
+        android:layout_margin="16dp"
+        android:background="@drawable/translucent_background"
+        android:padding="24dp">
 
         <ImageView android:src="@mipmap/nav_logo"
             android:layout_width="82dp"

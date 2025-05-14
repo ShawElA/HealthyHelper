@@ -9,7 +9,8 @@
     <com.next.easynavigation.view.EasyNavigationBar
         android:id="@+id/navigationBar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#88FFFFFF">
     </com.next.easynavigation.view.EasyNavigationBar>
 
 </LinearLayout>

@@ -10,9 +10,9 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:layout_margin="16dp"
+        android:background="@drawable/translucent_background"
+        android:padding="16dp"
         android:gravity="center_horizontal">
 
         <!-- App Logo -->
@@ -20,8 +20,8 @@
             android:src="@mipmap/nav_logo"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_marginTop="48dp"
-            android:layout_marginBottom="36dp" />
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp" />
 
         <!-- Welcome Text -->
         <TextView
@@ -32,7 +32,7 @@
             android:textStyle="bold"
             android:textColor="@color/colorDark"
             android:gravity="center"
-            android:layout_marginBottom="32dp"/>
+            android:layout_marginBottom="24dp"/>
 
         <!-- Username Input -->
         <com.google.android.material.textfield.TextInputLayout
@@ -98,7 +98,7 @@
             android:id="@+id/tv_register"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="24dp"
             android:textColor="@color/colorTheme"
             android:text="没有账号？点击注册"
             android:textSize="16sp"/>
@@ -110,7 +110,8 @@
             android:text="健康助手 © 2023"
             android:textColor="@color/gray1"
             android:gravity="center"
-            android:layout_marginTop="48dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:textSize="12sp"/>
 
     </LinearLayout>

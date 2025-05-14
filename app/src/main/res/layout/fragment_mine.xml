@@ -9,7 +9,7 @@
     tools:context=".fragment.MineFragment">
 
     <androidx.core.widget.NestedScrollView
-        android:background="@color/colorBack"
+        android:background="@drawable/fragment_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
@@ -80,7 +80,7 @@
             </FrameLayout>
 
             <androidx.core.widget.NestedScrollView
-                android:background="@color/colorBack"
+                android:background="@drawable/fragment_background"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <LinearLayout
