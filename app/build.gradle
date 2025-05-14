@@ -62,4 +62,7 @@ dependencies {
     implementation 'se.emilsjolander:stickylistheaders:2.7.0'
     implementation 'com.zhy:percent-support-extends:1.1.1'
     implementation 'com.flipboard:bottomsheet-core:1.5.2'
+    
+    // Markdown渲染库
+    implementation 'io.noties.markwon:core:4.6.2'
 }

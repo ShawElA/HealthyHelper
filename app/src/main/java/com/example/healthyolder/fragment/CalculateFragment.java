@@ -23,6 +23,7 @@ import com.example.healthyolder.bean.EmptyResult;
 import com.example.healthyolder.bean.Urls;
 import com.example.healthyolder.util.HttpUtil;
 import com.example.healthyolder.util.LogUtil;
+import com.example.healthyolder.util.MarkdownUtil;
 import com.example.healthyolder.util.ObjectCallBack;
 import com.example.healthyolder.util.OkHttpChatUtil;
 import com.example.healthyolder.util.TextUtil;
@@ -159,7 +160,8 @@ public class CalculateFragment extends Fragment{
         // 添加系统消息
         Map<String, String> systemMessage = new HashMap<>();
         systemMessage.put("role", "system");
-        systemMessage.put("content", "你是一个专业的医生助手，你专门面向老年人抑郁症患者或潜在患者，请以专业、友好的口吻回答用户的健康问题，不时对用户进行鼓励。");
+        systemMessage.put("content", "你是一个专业的医生助手，你专门面向老年人抑郁症患者或潜在患者，请以专业、友好的口吻回答用户的健康问题，不时对用户进行鼓励。" +
+                "在回复时允许使用Markdown语法使内容更清晰。");
         messages.add(systemMessage);
         
         // 添加用户消息
@@ -410,11 +412,12 @@ public class CalculateFragment extends Fragment{
                         ll_other.setVisibility(View.GONE);
                         tv_me.setText(o.getC_remark());
                     }
-                    // 如果消息是AI（-1）发送的，显示在左侧
+                    // 如果消息是AI（-1）发送的，显示在左侧并使用Markdown渲染
                     else {
                         ll_other.setVisibility(View.VISIBLE);
                         ll_me.setVisibility(View.GONE);
-                        tv_other.setText(o.getC_remark());
+                        // 使用Markdown渲染AI回复
+                        MarkdownUtil.setMarkdown(getContext(), tv_other, o.getC_remark());
                     }
                 }
             };

@@ -18,18 +18,24 @@
             android:layout_width="@dimen/icon_width"
             android:layout_height="@dimen/icon_height"
             android:background="@mipmap/default_head"
-            android:layout_gravity="center_vertical"
+            android:layout_gravity="top"
+            android:layout_marginTop="4dp"
             />
 
         <TextView
             android:id="@+id/tv_other"
-            android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/message_text_receive"
-            android:text="1321651"
-            android:gravity="center_vertical|left"
+            android:text=""
+            android:padding="12dp"
+            android:gravity="center_vertical|start"
             android:textSize="14dp"
+            android:autoLink="web|email"
+            android:linksClickable="true"
+            android:textIsSelectable="true"
+            android:lineSpacingMultiplier="1.2"
+            android:maxWidth="260dp"
             android:layout_marginLeft="@dimen/message_margin"
             android:layout_marginRight="@dimen/message_margin"
             />
@@ -44,15 +50,16 @@
 
         <TextView
             android:id="@+id/tv_me"
-            android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/chat_me"
-            android:text="1323434"
-            android:gravity="center_vertical|left"
+            android:text=""
+            android:padding="12dp"
+            android:gravity="center_vertical|start"
+            android:textSize="14dp"
+            android:maxWidth="260dp"
             android:layout_marginRight="@dimen/message_margin"
             android:layout_marginLeft="@dimen/message_margin"
-            android:textSize="14dp"
             />
 
         <ImageView
@@ -60,7 +67,8 @@
             android:layout_width="@dimen/icon_width"
             android:layout_height="@dimen/icon_height"
             android:background="@mipmap/default_head"
-            android:layout_gravity="center_vertical|right"
+            android:layout_gravity="top"
+            android:layout_marginTop="4dp"
             />
 
     </LinearLayout>
