@@ -12,6 +12,8 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.supportRequestWindowFeature(getWindow().FEATURE_NO_TITLE);
+        // 设置所有Activity的背景为app_background
+        getWindow().setBackgroundDrawableResource(R.drawable.app_background);
     }
 
     protected void initData() {

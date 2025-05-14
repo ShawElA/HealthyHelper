@@ -12,7 +12,8 @@ public class BaseFragmentAcy extends FragmentActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        // 设置所有FragmentActivity的背景为app_background
+        getWindow().setBackgroundDrawableResource(R.drawable.app_background);
     }
 
     protected void initData() {

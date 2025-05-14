@@ -10,7 +10,7 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:navigationBarColor">@color/colorLight</item>
         <item name="android:windowLightNavigationBar">true</item>
-        <item name="android:windowBackground">@color/colorBack</item>
+        <item name="android:windowBackground">@drawable/app_background</item>
         <item name="materialCardViewStyle">@style/AppCardView</item>
     </style>
 
