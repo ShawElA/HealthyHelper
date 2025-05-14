@@ -89,7 +89,6 @@ public class SportStepView extends View {
     private void drawArcYellow(Canvas canvas, RectF rectF) {
         Paint paint = new Paint();
         /** 默认画笔颜色，黄色 */
-        //TODO 底色
         paint.setColor(getResources().getColor(R.color.colorThemePale));
         /** 结合处为圆弧*/
         paint.setStrokeJoin(Paint.Join.ROUND);
