@@ -2,9 +2,9 @@ package com.example.healthyolder.bean;
 
 public class Urls {
     //手机热点
-    public static final String baseUrl = "http://192.168.43.144:8070/";
+    //public static final String baseUrl = "http://192.168.43.144:8070/";
     //校园网
-    //public static final String baseUrl = "http://172.19.73.16:8070/";
+    public static final String baseUrl = "http://172.19.73.16:8070/";
     public static final String GPTURL = "https://api.deepseek.com/v1/chat/completions";
 
     public static final String LOGIN = baseUrl + "login";                   //登录
