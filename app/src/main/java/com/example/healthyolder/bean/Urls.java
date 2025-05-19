@@ -2,7 +2,7 @@ package com.example.healthyolder.bean;
 
 public class Urls {
     // 本地服务器IP地址
-    public static final String baseUrl = "http://192.168.43.144:8070/";
+    public static final String baseUrl = "http://10.168.1.216:8070/";
     public static final String GPTURL = "https://api.deepseek.com/v1/chat/completions";
 
     public static final String LOGIN = baseUrl + "login";                   //登录

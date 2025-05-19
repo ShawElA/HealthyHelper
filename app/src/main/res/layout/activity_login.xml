@@ -107,7 +107,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="健康助手 © 2023"
+            android:text="健康助手 © 2025"
             android:textColor="@color/gray1"
             android:gravity="center"
             android:layout_marginTop="8dp"
