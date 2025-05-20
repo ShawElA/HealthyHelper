@@ -464,19 +464,36 @@ public class MentalHealthRecordActivity extends BaseActivity {
             };
             
             // 调整分数范围在25-100之间，不必是5的倍数
-            int[] scores = {32, 43, 57, 51, 63, 72, 68, 59};
+            int[] scores = {35, 78, 65, 72, 58, 82, 68, 63};
             String[] levels = {
-                "轻度抑郁",
-                "轻度抑郁",
-                "中度抑郁",
+                "重度抑郁",
                 "轻度抑郁",
                 "中度抑郁",
-                "中度抑郁",
+                "轻度抑郁",
+                "重度抑郁",
+                "无抑郁",
                 "中度抑郁",
                 "中度抑郁"
             };
             
-            for (int i = 0; i < 8; i++) {
+            // 修改：先添加最新的记录
+            int latestScore = getLatestDepressionScore();
+            String latestLevel = getDepressionLevelByScore(latestScore);
+            
+            DepressionTestHistory latestRecord = new DepressionTestHistory();
+            latestRecord.setHId(9);
+            latestRecord.setHUid(userIdInt);
+            latestRecord.setHScore(latestScore);
+            latestRecord.setHLevel(latestLevel);
+            latestRecord.setHAnswers("{}");
+            latestRecord.setHDate(new Date()); // 使用当前日期作为最新记录
+            
+            historyList.add(latestRecord);
+            
+            LogUtil.i("MentalHealthRecord", "添加最新测试记录: 分数: " + latestScore + ", 评估: " + latestLevel);
+            
+            // 修改：从最新的记录开始添加历史记录
+            for (int i = dates.length - 1; i >= 0; i--) {
                 DepressionTestHistory record = new DepressionTestHistory();
                 record.setHId(i + 1);
                 record.setHUid(userIdInt);
@@ -496,22 +513,6 @@ public class MentalHealthRecordActivity extends BaseActivity {
                           ", 分数: " + scores[i] + 
                           ", 评估: " + levels[i]);
             }
-            
-            // 添加第9条记录 - 使用当前本地保存的最新测试分数
-            int latestScore = getLatestDepressionScore();
-            String latestLevel = getDepressionLevelByScore(latestScore);
-            
-            DepressionTestHistory latestRecord = new DepressionTestHistory();
-            latestRecord.setHId(9);
-            latestRecord.setHUid(userIdInt);
-            latestRecord.setHScore(latestScore);
-            latestRecord.setHLevel(latestLevel);
-            latestRecord.setHAnswers("{}");
-            latestRecord.setHDate(new Date()); // 使用当前日期作为最新记录
-            
-            historyList.add(latestRecord);
-            
-            LogUtil.i("MentalHealthRecord", "添加最新测试记录: 分数: " + latestScore + ", 评估: " + latestLevel);
             
             // 更新UI
             dismissProgressDialog();
@@ -576,12 +577,14 @@ public class MentalHealthRecordActivity extends BaseActivity {
     private String getDepressionLevelByScore(int score) {
         if (score <= 0) {
             return "未知";
-        } else if (score <= 40) {
-            return "轻度抑郁";
-        } else if (score <= 70) {
-            return "中度抑郁";
-        } else {
+        } else if (score < 60) {
             return "重度抑郁";
+        } else if (score < 70) {
+            return "中度抑郁";
+        } else if (score < 80) {
+            return "轻度抑郁";
+        } else {
+            return "无抑郁";
         }
     }
 
@@ -618,16 +621,16 @@ public class MentalHealthRecordActivity extends BaseActivity {
             }
             
             List<Entry> entries = new ArrayList<>();
-            for (int i = 0; i < historyList.size(); i++) {
+            // 修改：从最新的记录开始添加数据点，这样最新的数据会显示在右侧
+            for (int i = historyList.size() - 1; i >= 0; i--) {
                 try {
-                    // 注意：图表中的数据点顺序从左到右，所以需要反转索引
-                    int index = historyList.size() - 1 - i;
-                    DepressionTestHistory history = historyList.get(index);
+                    DepressionTestHistory history = historyList.get(i);
                     if (history != null && history.getHScore() != null) {
-                        entries.add(new Entry(i, history.getHScore()));
-                        LogUtil.i("MentalHealthRecord", "添加数据点: x=" + i + ", y=" + history.getHScore());
+                        // 使用 (historyList.size() - 1 - i) 作为 x 轴的值，确保最新的数据在右侧
+                        entries.add(new Entry(historyList.size() - 1 - i, history.getHScore()));
+                        LogUtil.i("MentalHealthRecord", "添加数据点: x=" + (historyList.size() - 1 - i) + ", y=" + history.getHScore());
                     } else {
-                        LogUtil.e("MentalHealthRecord", "无效的历史记录或分数: index=" + index);
+                        LogUtil.e("MentalHealthRecord", "无效的历史记录或分数: index=" + i);
                     }
                 } catch (Exception e) {
                     LogUtil.e("MentalHealthRecord", "添加数据点时出错: " + e.getMessage());

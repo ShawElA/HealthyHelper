@@ -2,10 +2,12 @@ package com.example.healthyolder.activity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.healthyolder.BaseApplication;
 import com.example.healthyolder.R;
 import com.example.healthyolder.adapter.FragmentAdapter;
+import com.example.healthyolder.adapter.QuestionPreviewAdapter;
 import com.example.healthyolder.bean.EmptyResult;
 import com.example.healthyolder.bean.MethodResult;
 import com.example.healthyolder.bean.RefreshEvent;
@@ -37,6 +39,8 @@ import java.util.Date;
 import java.util.Locale;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,6 +52,9 @@ public class HealthyTestActivity extends BaseActivity {
     public CommonToolBar rl_commonToolBar;
     @BindView(R.id.svp_common)
     SlideViewPager addViewPager;
+    @BindView(R.id.rv_question_preview)
+    RecyclerView rvQuestionPreview;
+    
     private List<Fragment> fragments = new ArrayList<>();
     private FragmentAdapter fragmentAdapter;
     private List<MethodResult.DataBean> arrayList = new ArrayList<>();
@@ -55,6 +62,10 @@ public class HealthyTestActivity extends BaseActivity {
     Bundle bundle;
     private int locationIndex = 0;
     private Float userGoal = 0f;
+    
+    // 用于题目预览的适配器
+    private QuestionPreviewAdapter previewAdapter;
+    private List<Integer> questionIndices = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +94,9 @@ public class HealthyTestActivity extends BaseActivity {
 
                 if (arrayList.size() != 0){
                     rl_commonToolBar.setMiddleTitleText("1/" + arrayList.size() + "");
+                    initQuestionIndices();
                     initFragments();
+                    initQuestionPreview();
                 }
             }
 
@@ -91,6 +104,36 @@ public class HealthyTestActivity extends BaseActivity {
             public void onFail(Call call, Exception e) {
 
             }
+        });
+    }
+    
+    /**
+     * 初始化题目索引列表
+     */
+    private void initQuestionIndices() {
+        questionIndices.clear();
+        for (int i = 0; i < arrayList.size(); i++) {
+            questionIndices.add(i);
+        }
+    }
+    
+    /**
+     * 初始化题目预览区域
+     */
+    private void initQuestionPreview() {
+        // 使用GridLayoutManager以网格形式显示题目指示器
+        int spanCount = 5; // 每行显示5个题目
+        GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
+        rvQuestionPreview.setLayoutManager(layoutManager);
+        
+        // 创建并设置适配器
+        previewAdapter = new QuestionPreviewAdapter(this, questionIndices);
+        rvQuestionPreview.setAdapter(previewAdapter);
+        
+        // 设置题目点击事件，点击后跳转到对应题目
+        previewAdapter.setOnQuestionClickListener(position -> {
+            locationIndex = position;
+            addViewPager.setCurrentItem(position);
         });
     }
 
@@ -271,6 +314,13 @@ public class HealthyTestActivity extends BaseActivity {
 
             @Override
             public void onPageSelected(int position) {
+                locationIndex = position;
+                
+                // 更新题目预览中的当前位置指示
+                if (previewAdapter != null) {
+                    previewAdapter.setCurrentPosition(position);
+                }
+                
                 if (arrayList.size() - 1 == locationIndex){
                     //最后一页
                     rl_commonToolBar.setRightTitleText("完成");
@@ -294,7 +344,10 @@ public class HealthyTestActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refresh(RefreshEvent event){
-
+        // 如果题目选择状态发生变化，刷新预览区域
+        if (previewAdapter != null) {
+            previewAdapter.refreshAll();
+        }
     }
     
     /**
@@ -318,6 +371,16 @@ public class HealthyTestActivity extends BaseActivity {
             } else {
                 ToastUtil.showBottomToast("您还有测试题未答完");
             }
+        }
+    }
+    
+    /**
+     * 更新题目预览状态
+     * 在题目回答状态变化后调用
+     */
+    public void updateQuestionPreview() {
+        if (previewAdapter != null) {
+            previewAdapter.refreshAll();
         }
     }
 }

@@ -16,9 +16,16 @@
         app:middleText="">
     </com.example.healthyolder.view.CommonToolBar>
 
+    <include
+        android:id="@+id/layout_question_preview"
+        layout="@layout/layout_question_preview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+
     <com.example.healthyolder.view.SlideViewPager
         android:layout_below="@+id/rl_commonToolBar"
-        android:layout_centerInParent="true"
+        android:layout_above="@+id/layout_question_preview"
         android:id="@+id/svp_common"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

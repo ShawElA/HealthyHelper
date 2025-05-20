@@ -109,6 +109,11 @@ public class TestItemFragment extends Fragment {
                             BaseApplication.GoalMap.put(mIndex, (4 - holder.getAbsoluteAdapterPosition()) + "");
                             adapter.notifyDataSetChanged();
                             
+                            // 通知Activity更新题目预览状态
+                            if (getActivity() instanceof HealthyTestActivity) {
+                                ((HealthyTestActivity) getActivity()).updateQuestionPreview();
+                            }
+                            
                             // 如果该选项已经被选中，则自动进入下一题
                             if (isAlreadySelected && getActivity() instanceof HealthyTestActivity) {
                                 HealthyTestActivity activity = (HealthyTestActivity) getActivity();

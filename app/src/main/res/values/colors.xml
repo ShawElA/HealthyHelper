@@ -45,6 +45,7 @@
     <color name="lightGrey">#E2E2E2</color>
     <color name="middleLightGrey">#F6F6F6</color>
     <color name="grey">#999999</color>
+    <color name="darkGrey">#666666</color>
     <color name="black">#000000</color>
 
     <color name="deepBlue">#00548A</color>
