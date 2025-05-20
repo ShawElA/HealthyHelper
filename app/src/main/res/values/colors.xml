@@ -94,4 +94,6 @@
     <color name="transparentBlue">#B5EBFF</color>
     <!--黑蓝色-->
     <color name="blackBlue">#73A5B7</color>
+
+    <color name="divider">#E0E0E0</color>
 </resources>

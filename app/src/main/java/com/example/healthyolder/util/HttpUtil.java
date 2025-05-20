@@ -1,15 +1,19 @@
 package com.example.healthyolder.util;
 
+import com.example.healthyolder.bean.Urls;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.BitmapCallback;
 import com.zhy.http.okhttp.callback.Callback;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.io.File;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import okhttp3.Call;
 import okhttp3.MediaType;
+
 
 public class HttpUtil {
 
@@ -17,6 +21,132 @@ public class HttpUtil {
     private static final long READ_TIMEOUT = 15000;
     private static final long WRITE_TIMEOUT = 15000;
     private static boolean isValidTime = false;
+
+    /**
+     * 简化的GET请求方法，用于新API调用
+     * @param apiPath API路径，不包含baseUrl
+     * @param responseCallback 回调函数，处理返回的响应
+     */
+    public static void get(String apiPath, final ResponseCallback responseCallback) {
+        // 如果传入的是完整URL（包含http://），则直接使用
+        String url;
+        if (apiPath.startsWith("http://") || apiPath.startsWith("https://")) {
+            url = apiPath;
+        } else {
+            // 确保apiPath不以/开头，baseUrl以/结尾
+            String path = apiPath.startsWith("/") ? apiPath.substring(1) : apiPath;
+            url = Urls.baseUrl + path;
+        }
+        
+        LogUtil.i("GET URL", url);
+        
+        OkHttpUtils.get()
+                .url(url)
+                .build()
+                .connTimeOut(CONNECT_TIMEOUT)
+                .readTimeOut(READ_TIMEOUT)
+                .writeTimeOut(WRITE_TIMEOUT)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        LogUtil.e("HTTP GET Error", e.getMessage());
+                        if (responseCallback instanceof HttpCallback) {
+                            ((HttpCallback) responseCallback).onError(e);
+                        }
+                    }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+                        LogUtil.i("HTTP GET Response", response);
+                        if (responseCallback != null) {
+                            if (responseCallback instanceof HttpCallback) {
+                                ((HttpCallback) responseCallback).onSuccess(response);
+                            } else {
+                                responseCallback.onResponse(response);
+                            }
+                        }
+                    }
+                });
+    }
+
+    /**
+     * 简化的POST请求方法，用于新API调用
+     * @param apiPath API路径，不包含baseUrl
+     * @param params 请求参数
+     * @param responseCallback 回调函数，处理返回的响应
+     */
+    public static void post(String apiPath, Map<String, Object> params, final ResponseCallback responseCallback) {
+        // 如果传入的是完整URL（包含http://），则直接使用
+        String url;
+        if (apiPath.startsWith("http://") || apiPath.startsWith("https://")) {
+            url = apiPath;
+        } else {
+            // 确保apiPath不以/开头，baseUrl以/结尾
+            String path = apiPath.startsWith("/") ? apiPath.substring(1) : apiPath;
+            url = Urls.baseUrl + path;
+        }
+        
+        LogUtil.i("POST URL", url);
+        
+        // 记录请求参数
+        if (params != null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("POST params: {\n");
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                sb.append("  ").append(entry.getKey()).append(": ").append(entry.getValue()).append(",\n");
+            }
+            sb.append("}");
+            LogUtil.i("HTTP POST Params", sb.toString());
+        }
+        
+        // 将参数转换为JSON字符串
+        String jsonParams = new com.google.gson.Gson().toJson(params);
+        LogUtil.i("HTTP POST JSON", jsonParams);
+        
+        OkHttpUtils.postString()
+                .url(url)
+                .content(jsonParams)
+                .mediaType(MediaType.parse("application/json; charset=utf-8"))
+                .build()
+                .connTimeOut(CONNECT_TIMEOUT)
+                .readTimeOut(READ_TIMEOUT)
+                .writeTimeOut(WRITE_TIMEOUT)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        LogUtil.e("HTTP POST Error", e.getMessage());
+                    }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+                        LogUtil.i("HTTP POST Response", response);
+                        if (responseCallback != null) {
+                            responseCallback.onResponse(response);
+                        }
+                    }
+                });
+    }
+
+    // 定义回调接口，仅包含一个方法，以支持lambda表达式
+    public interface ResponseCallback {
+        void onResponse(String response);
+    }
+
+    // 完整的回调接口，包含成功和失败方法
+    public interface HttpCallback extends ResponseCallback {
+        void onSuccess(String response);
+        void onError(Exception e);
+        
+        @Override
+        default void onResponse(String response) {
+            onSuccess(response);
+        }
+        
+        // 为了兼容旧代码，添加此方法
+        default void onFailure(String errorMsg) {
+            LogUtil.e("HTTP Error", errorMsg);
+        }
+    }
 
     /**
      * @param url      请求地址

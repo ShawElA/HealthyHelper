@@ -11,8 +11,11 @@ import com.example.healthyolder.bean.UserInfo;
 import com.example.healthyolder.util.HttpUtil;
 import com.example.healthyolder.util.IntentUtil;
 import com.example.healthyolder.util.ObjectCallBack;
+import com.example.healthyolder.util.SPUtil;
 import com.example.healthyolder.util.TextUtil;
 import com.example.healthyolder.util.ToastUtil;
+import com.example.healthyolder.util.PreferenceUtil;
+import com.example.healthyolder.util.LogUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -89,14 +92,34 @@ public class LoginActivity extends BaseActivity {
                 if (response.isSuccess()) {
                     ToastUtil.showBottomToast("登录成功");
                     //登录成功
-                    BaseApplication.setUserId(response.getData().get(0).getU_id());
+                    String userId = response.getData().get(0).getU_id();
+                    
+                    // 1. 更新BaseApplication
+                    BaseApplication.setUserId(userId);
                     BaseApplication.setUserNickname(response.getData().get(0).getNickname());
                     BaseApplication.setPassword(et_password.getText().toString());
                     BaseApplication.setIcon(response.getData().get(0).getU_icon());
                     
+                    // 2. 使用多种方式存储用户ID，确保各处能获取到
+                    SPUtil.putString(LoginActivity.this, SPUtil.USER_ID, userId);
+                    SPUtil.putString(LoginActivity.this, SPUtil.USER_NAME, response.getData().get(0).getNickname());
+                    
+                    // 3. 额外使用PreferenceUtil存储用户ID
+                    PreferenceUtil.putString("userId", userId);
+                    
+                    // 4. 检查是否存储成功
+                    String spUserId = SPUtil.getString(LoginActivity.this, SPUtil.USER_ID, "");
+                    String prefUserId = PreferenceUtil.getString("userId");
+                    LogUtil.i("Login", "用户ID同步: BaseApplication=" + BaseApplication.getUserId() 
+                            + ", SPUtil=" + spUserId 
+                            + ", PreferenceUtil=" + prefUserId);
+                    
                     // 存储抑郁测试相关数据
                     if (response.getData().get(0).getDepression_score() != null) {
-                        BaseApplication.setDepressionScore(response.getData().get(0).getDepression_score());
+                        String score = response.getData().get(0).getDepression_score();
+                        BaseApplication.setDepressionScore(score);
+                        PreferenceUtil.putString("goal", score);
+                        SPUtil.putString(LoginActivity.this, "depression_score", score);
                     }
                     if (response.getData().get(0).getLast_test_time() != null) {
                         BaseApplication.setLastTestTime(response.getData().get(0).getLast_test_time());

@@ -51,6 +51,7 @@ public class LoginResult {
 
         private String u_id;
         private String nickname;
+        private String u_name;
         private String u_mobile;
         private String u_login_pwd;
         private String u_pay_pwd;
@@ -81,11 +82,11 @@ public class LoginResult {
         
         // For backward compatibility
         public String getU_name() {
-            return nickname;
+            return u_name;
         }
 
         public void setU_name(String name) {
-            this.nickname = name;
+            this.u_name = name;
         }
 
         public String getU_mobile() {

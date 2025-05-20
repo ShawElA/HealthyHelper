@@ -47,6 +47,7 @@ public class CommentResult {
         private String number;
         @SerializedName("e-mail")
         private String email;
+        @SerializedName("u_icon")
         private String icon;
         private String u_sex;
         private String u_date;

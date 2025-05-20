@@ -6,13 +6,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.healthyolder.BaseApplication;
 import com.example.healthyolder.R;
 import com.example.healthyolder.activity.CommonActivity;
 import com.example.healthyolder.activity.HealthyTestActivity;
 import com.example.healthyolder.activity.MainActivity;
+import com.example.healthyolder.activity.MentalHealthRecordActivity;
 import com.example.healthyolder.bean.RefreshEvent;
 import com.example.healthyolder.util.IntentUtil;
+import com.example.healthyolder.util.LogUtil;
 import com.example.healthyolder.util.PreferenceUtil;
+import com.example.healthyolder.util.SPUtil;
 import com.example.healthyolder.util.TextUtil;
 import com.example.healthyolder.util.ToastUtil;
 import com.example.healthyolder.view.SportStepView;
@@ -68,6 +72,11 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    @OnClick(R.id.tv_health_record)
+    public void openHealthRecord() {
+        IntentUtil.startActivity(getActivity(), MentalHealthRecordActivity.class);
+    }
+
     @OnClick(R.id.sportStepCountInfo)
     public void onScoreInfoClick() {
         // 根据分数区间跳转到不同页面
@@ -119,11 +128,41 @@ public class HomeFragment extends Fragment {
     }
 
 
-    private void initData(){
-        if (TextUtil.isValidate(PreferenceUtil.getString("goal"))){
-            currentScore = Integer.valueOf(PreferenceUtil.getString("goal"));
-            sportStepCount.setCurrentCount(100, currentScore);
-            changeHint(currentScore);
+    private void initData() {
+        // 尝试从多个来源获取分数，确保数据一致性
+        try {
+            // 首先尝试从BaseApplication获取分数
+            if (BaseApplication.getDepressionScore() != null && !BaseApplication.getDepressionScore().isEmpty() 
+                    && !"0".equals(BaseApplication.getDepressionScore())) {
+                currentScore = Integer.parseInt(BaseApplication.getDepressionScore());
+                LogUtil.i("HomeFragment", "使用BaseApplication分数: " + currentScore);
+            }
+            // 然后尝试从PreferenceUtil获取
+            else if (TextUtil.isValidate(PreferenceUtil.getString("goal"))) {
+                currentScore = Integer.parseInt(PreferenceUtil.getString("goal"));
+                LogUtil.i("HomeFragment", "使用PreferenceUtil分数: " + currentScore);
+                // 同步到BaseApplication
+                BaseApplication.setDepressionScore(String.valueOf(currentScore));
+            }
+            // 最后尝试从SPUtil获取
+            else if (getContext() != null) {
+                String score = SPUtil.getString(getContext(), "depression_score", "0");
+                if (TextUtil.isValidate(score) && !"0".equals(score)) {
+                    currentScore = Integer.parseInt(score);
+                    LogUtil.i("HomeFragment", "使用SPUtil分数: " + currentScore);
+                    // 同步数据
+                    BaseApplication.setDepressionScore(score);
+                    PreferenceUtil.putString("goal", score);
+                }
+            }
+            
+            // 更新UI
+            if (currentScore > 0) {
+                sportStepCount.setCurrentCount(100, currentScore);
+                changeHint(currentScore);
+            }
+        } catch (Exception e) {
+            LogUtil.e("HomeFragment", "初始化分数数据出错: " + e.getMessage());
         }
     }
 
@@ -143,5 +182,18 @@ public class HomeFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refresh(RefreshEvent event){
         initData();
+    }
+    
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 每次界面重新显示时刷新数据
+        initData();
+    }
+    
+    @Override
+    public void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
     }
 }

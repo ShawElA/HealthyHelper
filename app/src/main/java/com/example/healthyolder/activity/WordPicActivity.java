@@ -259,7 +259,31 @@ public class WordPicActivity extends AppCompatActivity {
                     detail_page_userName.setText(o.getUsername());
                     detail_page_story.setText(o.getC_content());
                     detail_page_time.setText(o.getC_date());
-                    Glide.with(mContext).load(o.getIcon()).into(detail_page_userLogo);
+                    String iconUrl = o.getIcon();
+                    com.example.healthyolder.util.LogUtil.i("评论头像", "原始URL: " + (iconUrl == null ? "null" : iconUrl));
+                    if (iconUrl == null || iconUrl.isEmpty()) {
+                        detail_page_userLogo.setImageResource(R.drawable.default_head);
+                        com.example.healthyolder.util.LogUtil.i("评论头像", "使用默认头像 - 直接设置图像资源");
+                    } else if (iconUrl.contains("uploads")) {
+                        String fullUrl = Urls.baseUrl + iconUrl;
+                        com.example.healthyolder.util.LogUtil.i("评论头像", "完整URL: " + fullUrl);
+                        Glide.with(mContext)
+                            .load(fullUrl)
+                            .placeholder(R.drawable.default_head)
+                            .error(R.drawable.default_head)
+                            .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                            .dontAnimate()
+                            .into(detail_page_userLogo);
+                    } else {
+                        com.example.healthyolder.util.LogUtil.i("评论头像", "使用原URL: " + iconUrl);
+                        Glide.with(mContext)
+                            .load(iconUrl)
+                            .placeholder(R.drawable.default_head)
+                            .error(R.drawable.default_head)
+                            .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                            .dontAnimate()
+                            .into(detail_page_userLogo);
+                    }
                 }
 
             };

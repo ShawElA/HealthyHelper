@@ -1,7 +1,7 @@
 package com.example.healthyolder.bean;
 
 public class Urls {
-    // 本地服务器IP地址
+    // 本地服务器IP地址 - 确保格式正确 http://而不是http:/
     public static final String baseUrl = "http://10.168.1.216:8070/";
     public static final String GPTURL = "https://api.deepseek.com/v1/chat/completions";
 
@@ -28,8 +28,9 @@ public class Urls {
     public static final String DETAILUSER = baseUrl + "selectAllUser";      //获取医生
     
     // 抑郁自测相关接口
-    public static final String ADD_DEPRESSION_TEST = baseUrl + "addDepressionTest";    //添加抑郁测试记录
-    public static final String GET_DEPRESSION_TEST_HISTORY = baseUrl + "getDepressionTestHistory";  //获取测试历史
+    public static final String SAVE_DEPRESSION_TEST = baseUrl + "api/depression/save";    //保存抑郁测试记录
+    public static final String GET_DEPRESSION_HISTORY = baseUrl + "api/depression/history";  //获取测试历史
+    public static final String GET_LATEST_SCORE = baseUrl + "api/depression/latest";  //获取最新得分
     
     // 预约咨询实际接口
     // public static final String GET_AVAILABLE_TIMES = baseUrl + "getAvailableTimes";   // 获取医生可预约时间

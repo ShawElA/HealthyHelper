@@ -1,6 +1,7 @@
 package com.example.healthyolder.activity;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
@@ -10,6 +11,7 @@ import com.example.healthyolder.bean.EmptyResult;
 import com.example.healthyolder.bean.Urls;
 import com.example.healthyolder.util.HttpUtil;
 import com.example.healthyolder.util.IntentUtil;
+import com.example.healthyolder.util.LogUtil;
 import com.example.healthyolder.util.ObjectCallBack;
 import com.example.healthyolder.util.TextUtil;
 import com.example.healthyolder.util.ToastUtil;
@@ -45,14 +47,21 @@ public class RegisterActivity extends BaseActivity {
     boolean isEmail = false;
     boolean isPassword = false;
     boolean isPasswordAgain = false;
-    private String user_sex = Configs.SEX_GRIL + "";            //
+    private String user_sex = Configs.SEX_GRIL + "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         ButterKnife.bind(this);
+        initView();
         initEvent();
+    }
+    
+    private void initView() {
+        // 设置注册按钮初始状态
+        btn_register.setEnabled(false);
+        btn_register.setSelected(false);
     }
 
     @Override
@@ -69,6 +78,14 @@ public class RegisterActivity extends BaseActivity {
                         user_sex = Configs.SEX_BOY + "";
                         break;
                 }
+            }
+        });
+        
+        // 为注册按钮添加点击监听器，避免使用注解方式
+        btn_register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                register();
             }
         });
     }
@@ -123,8 +140,15 @@ public class RegisterActivity extends BaseActivity {
         setLoginButtonState();
     }
 
-    @OnClick(R.id.btn_register)
+    // 移除注解，避免重复注册
     public void register(){
+        LogUtil.d("RegisterActivity", "Register button clicked");
+        
+        if (!isAccount || !isNumber || !isEmail || !isPassword || !isPasswordAgain) {
+            ToastUtil.showBottomToast("请完成所有必填项");
+            return;
+        }
+        
         if (et_password.getText().toString().equals(et_password_again.getText().toString())){
             Map<String, String> parameter = new HashMap<>();
             parameter.put("username", et_account.getText().toString());
@@ -133,10 +157,17 @@ public class RegisterActivity extends BaseActivity {
             parameter.put("email", et_email.getText().toString());
             parameter.put("sex", user_sex);
             parameter.put("icon", "");
+            
+            // 显示加载对话框
+            showProgressDialog("正在注册...");
+            
             HttpUtil.getResponse(Urls.REGISTER, parameter, this, new ObjectCallBack<EmptyResult>(EmptyResult.class) {
 
                 @Override
                 public void onSuccess(EmptyResult response) {
+                    // 隐藏对话框
+                    dismissProgressDialog();
+                    
                     if (response == null) {
                         return;
                     }
@@ -152,21 +183,23 @@ public class RegisterActivity extends BaseActivity {
 
                 @Override
                 public void onFail(Call call, Exception e) {
+                    // 隐藏对话框
+                    dismissProgressDialog();
+                    LogUtil.e("RegisterActivity", "Register failed: " + e.getMessage());
                     ToastUtil.showBottomToast(R.string.registerUnsuccessfully);
                 }
             });
         }else {
             ToastUtil.showBottomToast("请确认两次密码是否一致");
         }
-
     }
 
     private void setLoginButtonState() {
         if (isAccount && isNumber && isEmail && isPassword && isPasswordAgain) {
-            btn_register.setClickable(true);
+            btn_register.setEnabled(true);
             btn_register.setSelected(true);
         } else {
-            btn_register.setClickable(false);
+            btn_register.setEnabled(false);
             btn_register.setSelected(false);
         }
     }

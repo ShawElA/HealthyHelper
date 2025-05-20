@@ -1,6 +1,7 @@
 package com.example.healthyolder.bean;
 
 import java.util.List;
+import android.text.TextUtils;
 
 public class NoteResult {
 
@@ -252,11 +253,11 @@ public class NoteResult {
         
         // For backward compatibility
         public String getU_name() {
-            return nickname;
+            return username;
         }
 
-        public void setU_name(String nickname) {
-            this.nickname = nickname;
+        public void setU_name(String name) {
+            this.username = name;
         }
     }
 }

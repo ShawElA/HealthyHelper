@@ -38,6 +38,9 @@
         <activity android:name=".activity.MyFavActivity"                    />
         <activity android:name=".activity.DoctorDetailActivity"             />
         <activity android:name=".activity.PayActivity"                      />
+        <activity android:name=".activity.MentalHealthRecordActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"/>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET"     />
