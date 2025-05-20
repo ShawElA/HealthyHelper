@@ -21,8 +21,10 @@ public class BaseApplication extends Application {
     private static Context context;
     private static String userId = "1";
     public static String password = "123456";
-    public static String userName = "evan";
+    public static String userNickname = "evan";
     public static String icon = "";
+    public static String depressionScore = "0";
+    public static String lastTestTime = "";
     public static boolean isTest = true;
     private static String doctorId = "";                //预约医生id
     private static String doctorName = "";              //预约医生名
@@ -82,12 +84,12 @@ public class BaseApplication extends Application {
         BaseApplication.password = password;
     }
 
-    public static String getUserName() {
-        return userName;
+    public static String getUserNickname() {
+        return userNickname;
     }
 
-    public static void setUserName(String userName) {
-        BaseApplication.userName = userName;
+    public static void setUserNickname(String nickname) {
+        BaseApplication.userNickname = nickname;
     }
 
     public static String getIcon() {
@@ -96,6 +98,22 @@ public class BaseApplication extends Application {
 
     public static void setIcon(String icon) {
         BaseApplication.icon = icon;
+    }
+
+    public static String getDepressionScore() {
+        return depressionScore;
+    }
+
+    public static void setDepressionScore(String score) {
+        BaseApplication.depressionScore = score;
+    }
+
+    public static String getLastTestTime() {
+        return lastTestTime;
+    }
+
+    public static void setLastTestTime(String time) {
+        BaseApplication.lastTestTime = time;
     }
 
     public static String getDoctorId() {
@@ -120,5 +138,16 @@ public class BaseApplication extends Application {
 
     public static void setDepartmentName(String departmentName) {
         BaseApplication.departmentName = departmentName;
+    }
+    
+    // 兼容旧代码，避免修改太多文件
+    @Deprecated
+    public static String getUserName() {
+        return userNickname;
+    }
+
+    @Deprecated
+    public static void setUserName(String userName) {
+        BaseApplication.userNickname = userName;
     }
 }

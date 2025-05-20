@@ -87,7 +87,7 @@ public class MineActivity extends BaseActivity {
                 }
                 if (response.isSuccess()) {
                     ToastUtil.showBottomToast(response.getResult());
-                    et_name.setText(response.getData().get(0).getU_name());
+                    et_name.setText(response.getData().get(0).getNickname());
                     et_id.setText(response.getData().get(0).getU_id());
                     et_number.setText(response.getData().get(0).getU_mobile());
                     et_emial.setText(response.getData().get(0).getU_email());
@@ -190,7 +190,7 @@ public class MineActivity extends BaseActivity {
                 }
                 if (response.isSuccess()) {
                     ToastUtil.showBottomToast("修改成功");
-                    BaseApplication.setUserName(et_name.getText().toString());
+                    BaseApplication.setUserNickname(et_name.getText().toString());
                     BaseApplication.setIcon(iconPath);
                     btn_edit.setSelected(false);
                     btn_edit.setEnabled(false);

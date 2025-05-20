@@ -121,7 +121,7 @@ public class NoteFragment extends Fragment{
                     TextView tv_title = holder.getView(R.id.tv_title);
                     TextView tv_name = holder.getView(R.id.iv_name);
                     tv_title.setText(noteResult.getN_title());
-                    tv_name.setText(noteResult.getU_name());
+                    tv_name.setText(noteResult.getNickname());
                     if (TextUtil.isValidate(noteResult.getU_icon())){
                         if (noteResult.getN_type().equals(Configs.NOTE_WORD + "")){
                             iv_icon.setVisibility(View.GONE);

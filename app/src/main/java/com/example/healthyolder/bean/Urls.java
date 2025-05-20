@@ -27,6 +27,10 @@ public class Urls {
     public static final String GETFAVESSAY = baseUrl + "getFavEssay";              //点赞过的文章
     public static final String DETAILUSER = baseUrl + "selectAllUser";      //获取医生
     
+    // 抑郁自测相关接口
+    public static final String ADD_DEPRESSION_TEST = baseUrl + "addDepressionTest";    //添加抑郁测试记录
+    public static final String GET_DEPRESSION_TEST_HISTORY = baseUrl + "getDepressionTestHistory";  //获取测试历史
+    
     // 预约咨询实际接口
     // public static final String GET_AVAILABLE_TIMES = baseUrl + "getAvailableTimes";   // 获取医生可预约时间
     // public static final String CREATE_APPOINTMENT = baseUrl + "createAppointment";    // 创建预约

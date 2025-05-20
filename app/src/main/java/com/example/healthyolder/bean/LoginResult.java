@@ -36,7 +36,7 @@ public class LoginResult {
     public static class DataBean implements Comparable<DataBean>, Serializable {
         /**
          * u_id : 2
-         * u_name : 杨天成
+         * nickname : 杨天成
          * u_mobile : 18814118285
          * u_login_pwd : 123456
          * u_pay_pwd : 123456
@@ -50,7 +50,7 @@ public class LoginResult {
          */
 
         private String u_id;
-        private String u_name;
+        private String nickname;
         private String u_mobile;
         private String u_login_pwd;
         private String u_pay_pwd;
@@ -71,12 +71,21 @@ public class LoginResult {
             this.u_id = u_id;
         }
 
-        public String getU_name() {
-            return u_name;
+        public String getNickname() {
+            return nickname;
         }
 
-        public void setU_name(String u_name) {
-            this.u_name = u_name;
+        public void setNickname(String nickname) {
+            this.nickname = nickname;
+        }
+        
+        // For backward compatibility
+        public String getU_name() {
+            return nickname;
+        }
+
+        public void setU_name(String name) {
+            this.nickname = name;
         }
 
         public String getU_mobile() {

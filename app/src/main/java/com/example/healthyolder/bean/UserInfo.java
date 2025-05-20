@@ -6,7 +6,7 @@ public class UserInfo {
 
     /**
      * success : true
-     * data : [{"u_id":"1","u_name":"weven","u_mobile":"13750435172","u_login_pwd":"123456","u_pwd_pwd":null,"u_power":"0","u_sex":"0","u_email":"597777714044@qq.com","u_time":"0000-00-00 00:00:00","u_icon":""}]
+     * data : [{"u_id":"1","nickname":"weven","u_mobile":"13750435172","u_pwd":"123456","u_sex":"0","u_email":"597777714044@qq.com","u_time":"0000-00-00 00:00:00","u_icon":"","depression_score":"10","last_test_time":"2025-03-01 00:00:00"}]
      * result : 登录成功
      */
 
@@ -41,25 +41,28 @@ public class UserInfo {
     public static class DataBean {
         /**
          * u_id : 1
-         * u_name : weven
+         * nickname : weven
          * u_mobile : 13750435172
-         * u_login_pwd : 123456
-         * u_pwd_pwd : null
-         * u_power : 0
+         * u_pwd : 123456
          * u_sex : 0
          * u_email : 597777714044@qq.com
          * u_time : 0000-00-00 00:00:00
-         * u_icon :
+         * u_icon : 
+         * depression_score : 10
+         * last_test_time : 2025-03-01 00:00:00
          */
 
         private String u_id;
-        private String u_name;
+        private String nickname;
         private String u_mobile;
         private String u_pwd;
         private String u_sex;
         private String u_email;
         private String u_time;
         private String u_icon;
+        private String depression_score;
+        private String last_test_time;
+        private String test_history;
 
         public String getU_id() {
             return u_id;
@@ -69,12 +72,12 @@ public class UserInfo {
             this.u_id = u_id;
         }
 
-        public String getU_name() {
-            return u_name;
+        public String getNickname() {
+            return nickname;
         }
 
-        public void setU_name(String u_name) {
-            this.u_name = u_name;
+        public void setNickname(String nickname) {
+            this.nickname = nickname;
         }
 
         public String getU_mobile() {
@@ -123,6 +126,30 @@ public class UserInfo {
 
         public void setU_icon(String u_icon) {
             this.u_icon = u_icon;
+        }
+        
+        public String getDepression_score() {
+            return depression_score;
+        }
+
+        public void setDepression_score(String depression_score) {
+            this.depression_score = depression_score;
+        }
+
+        public String getLast_test_time() {
+            return last_test_time;
+        }
+
+        public void setLast_test_time(String last_test_time) {
+            this.last_test_time = last_test_time;
+        }
+
+        public String getTest_history() {
+            return test_history;
+        }
+
+        public void setTest_history(String test_history) {
+            this.test_history = test_history;
         }
     }
 }

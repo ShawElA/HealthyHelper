@@ -7,7 +7,7 @@ public class ChatResult {
 
     /**
      * success : true
-     * data : [{"c_id":"1","c_gid":"1","c_remark":"我签到啦","c_uid":"453452","c_date":"2023-03-03 10:00:00","c_type":"0","u_id":"453452","u_name":"weven","u_pwd":"123456","u_email":"594771590@qq,com","u_icon":"","u_mobile":"13750435172","u_time":"2022-11-13"},{"c_id":"2","c_gid":"1","c_remark":"我签到啦","c_uid":"453453","c_date":"2023-03-03 11:00:00","c_type":"0","u_id":"453453","u_name":"weven1","u_pwd":"123456","u_email":"594771590@qq,com","u_icon":"","u_mobile":"13750435172","u_time":"2022-11-13"}]
+     * data : [{"c_id":"1","c_gid":"1","c_remark":"我签到啦","c_uid":"453452","c_date":"2023-03-03 10:00:00","c_type":"0","u_id":"453452","nickname":"weven","u_pwd":"123456","u_email":"594771590@qq,com","u_icon":"","u_mobile":"13750435172","u_time":"2022-11-13"},{"c_id":"2","c_gid":"1","c_remark":"我签到啦","c_uid":"453453","c_date":"2023-03-03 11:00:00","c_type":"0","u_id":"453453","nickname":"weven1","u_pwd":"123456","u_email":"594771590@qq,com","u_icon":"","u_mobile":"13750435172","u_time":"2022-11-13"}]
      * result : 获取成功
      */
 
@@ -48,7 +48,7 @@ public class ChatResult {
         private String c_date;
         private String c_type;
         private String u_id;
-        private String u_name;
+        private String nickname;
         private String u_pwd;
         private String u_email;
         private String u_icon;
@@ -120,12 +120,21 @@ public class ChatResult {
             this.u_id = u_id;
         }
 
-        public String getU_name() {
-            return u_name;
+        public String getNickname() {
+            return nickname;
         }
 
-        public void setU_name(String u_name) {
-            this.u_name = u_name;
+        public void setNickname(String nickname) {
+            this.nickname = nickname;
+        }
+        
+        // For backward compatibility
+        public String getU_name() {
+            return nickname;
+        }
+
+        public void setU_name(String nickname) {
+            this.nickname = nickname;
         }
 
         public String getU_pwd() {

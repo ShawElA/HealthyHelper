@@ -40,22 +40,17 @@ public class NoteResult {
         private String n_id;
         private String n_type;
         private String u_id;
-        private String u_account;
-        private String u_name;
+        private String username;
+        private String nickname;
         private String u_pwd;
         private String u_email;
         private String u_icon;
         private String u_mobile;
         private String u_sex;
         private String u_time;
-        private String u_height;
-        private String u_weight;
-        private String u_waist;
-        private String u_neck;
-        private String u_bloodpressure;
-        private String u_rate;
-        private String u_sugar;
-        private String u_goal;
+        private String depression_score;
+        private String last_test_time;
+        private String test_history;
         private String a_id;
         private String a_type;
         private String a_path;
@@ -118,20 +113,20 @@ public class NoteResult {
             this.u_id = u_id;
         }
 
-        public String getU_account() {
-            return u_account;
+        public String getUsername() {
+            return username;
         }
 
-        public void setU_account(String u_account) {
-            this.u_account = u_account;
+        public void setUsername(String username) {
+            this.username = username;
         }
 
-        public String getU_name() {
-            return u_name;
+        public String getNickname() {
+            return nickname;
         }
 
-        public void setU_name(String u_name) {
-            this.u_name = u_name;
+        public void setNickname(String nickname) {
+            this.nickname = nickname;
         }
 
         public String getU_pwd() {
@@ -182,68 +177,28 @@ public class NoteResult {
             this.u_time = u_time;
         }
 
-        public String getU_height() {
-            return u_height;
+        public String getDepression_score() {
+            return depression_score;
         }
 
-        public void setU_height(String u_height) {
-            this.u_height = u_height;
+        public void setDepression_score(String depression_score) {
+            this.depression_score = depression_score;
         }
 
-        public String getU_weight() {
-            return u_weight;
+        public String getLast_test_time() {
+            return last_test_time;
         }
 
-        public void setU_weight(String u_weight) {
-            this.u_weight = u_weight;
+        public void setLast_test_time(String last_test_time) {
+            this.last_test_time = last_test_time;
         }
 
-        public String getU_waist() {
-            return u_waist;
+        public String getTest_history() {
+            return test_history;
         }
 
-        public void setU_waist(String u_waist) {
-            this.u_waist = u_waist;
-        }
-
-        public String getU_neck() {
-            return u_neck;
-        }
-
-        public void setU_neck(String u_neck) {
-            this.u_neck = u_neck;
-        }
-
-        public String getU_bloodpressure() {
-            return u_bloodpressure;
-        }
-
-        public void setU_bloodpressure(String u_bloodpressure) {
-            this.u_bloodpressure = u_bloodpressure;
-        }
-
-        public String getU_rate() {
-            return u_rate;
-        }
-
-        public void setU_rate(String u_rate) {
-            this.u_rate = u_rate;
-        }
-
-        public String getU_sugar() {
-            return u_sugar;
-        }
-
-        public void setU_sugar(String u_sugar) {
-            this.u_sugar = u_sugar;
-        }
-
-        public String getU_goal() {
-            return u_goal;
-        }
-
-        public void setU_goal(String u_goal) {
-            this.u_goal = u_goal;
+        public void setTest_history(String test_history) {
+            this.test_history = test_history;
         }
 
         public String getA_id() {
@@ -284,6 +239,24 @@ public class NoteResult {
 
         public void setAn_id(String an_id) {
             this.an_id = an_id;
+        }
+
+        // For backward compatibility
+        public String getU_account() {
+            return username;
+        }
+
+        public void setU_account(String username) {
+            this.username = username;
+        }
+        
+        // For backward compatibility
+        public String getU_name() {
+            return nickname;
+        }
+
+        public void setU_name(String nickname) {
+            this.nickname = nickname;
         }
     }
 }

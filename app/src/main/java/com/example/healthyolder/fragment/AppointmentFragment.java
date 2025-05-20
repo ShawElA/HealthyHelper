@@ -89,7 +89,7 @@ public class AppointmentFragment extends Fragment implements View.OnClickListene
                 Collections.sort(arrayList);
                 for (int i = 0; i < arrayList.size(); i++) {
                     GoodsItem item = null;
-                    item = new GoodsItem(Integer.valueOf(arrayList.get(i).getU_id()), arrayList.get(i).getU_name(),
+                    item = new GoodsItem(Integer.valueOf(arrayList.get(i).getU_id()), arrayList.get(i).getNickname(),
                             Integer.valueOf(arrayList.get(i).getU_department_id()), arrayList.get(i).getDd_name(),
                             arrayList.get(i).getU_icon(), arrayList.get(i).getU_remark());
                     dataList.add(item);

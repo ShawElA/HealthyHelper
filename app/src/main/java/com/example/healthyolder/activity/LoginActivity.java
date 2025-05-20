@@ -84,16 +84,24 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onSuccess(UserInfo response) {
                 if (response == null) {
-
                     return;
                 }
                 if (response.isSuccess()) {
                     ToastUtil.showBottomToast("登录成功");
                     //登录成功
                     BaseApplication.setUserId(response.getData().get(0).getU_id());
-                    BaseApplication.setUserName(response.getData().get(0).getU_name());
+                    BaseApplication.setUserNickname(response.getData().get(0).getNickname());
                     BaseApplication.setPassword(et_password.getText().toString());
                     BaseApplication.setIcon(response.getData().get(0).getU_icon());
+                    
+                    // 存储抑郁测试相关数据
+                    if (response.getData().get(0).getDepression_score() != null) {
+                        BaseApplication.setDepressionScore(response.getData().get(0).getDepression_score());
+                    }
+                    if (response.getData().get(0).getLast_test_time() != null) {
+                        BaseApplication.setLastTestTime(response.getData().get(0).getLast_test_time());
+                    }
+                    
                     IntentUtil.startActivity(LoginActivity.this, MainActivity.class);
                     finish();
 
