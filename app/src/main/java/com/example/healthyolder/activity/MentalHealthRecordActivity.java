@@ -437,7 +437,7 @@ public class MentalHealthRecordActivity extends BaseActivity {
         String userId = getCurrentUserId();
         if (userId == null || userId.isEmpty()) {
             LogUtil.e("MentalHealthRecord", "无法获取有效用户ID，返回默认分数");
-            return 75; // 默认分数
+            return 0; // 返回0表示没有分数
         }
         
         // 从用户特定存储中获取分数
@@ -465,61 +465,9 @@ public class MentalHealthRecordActivity extends BaseActivity {
             }
         }
         
-        // 尝试从服务器获取最新分数
+        // 如果仍然没有分数，返回0
         if (score <= 0) {
-            String latestScoreUrl = Urls.GET_LATEST_SCORE + userId;
-            LogUtil.i("MentalHealthRecord", "尝试从服务器获取最新分数: " + latestScoreUrl);
-            
-            // 注意：这是同步请求，仅在无其他数据源时使用
-            try {
-                // 创建一个用于同步的标志
-                final boolean[] completed = {false};
-                final int[] serverScore = {0};
-                
-                HttpUtil.get(latestScoreUrl, null, new HttpUtil.HttpCallback() {
-                    @Override
-                    public void onSuccess(String response) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            if (jsonObject.getBoolean("success")) {
-                                Object data = jsonObject.opt("data");
-                                if (data != null && !(data instanceof JSONObject)) {
-                                    serverScore[0] = jsonObject.optInt("data", 0);
-                                    LogUtil.i("MentalHealthRecord", "服务器返回分数: " + serverScore[0]);
-                                }
-                            }
-                        } catch (Exception e) {
-                            LogUtil.e("MentalHealthRecord", "解析服务器分数失败: " + e.getMessage());
-                        }
-                        completed[0] = true;
-                    }
-                    
-                    @Override
-                    public void onError(Exception e) {
-                        LogUtil.e("MentalHealthRecord", "获取服务器分数失败: " + e.getMessage());
-                        completed[0] = true;
-                    }
-                });
-                
-                // 等待最多2秒
-                for (int i = 0; i < 20 && !completed[0]; i++) {
-                    Thread.sleep(100);
-                }
-                
-                if (serverScore[0] > 0) {
-                    score = serverScore[0];
-                    // 保存到用户特定存储
-                    SPUtil.saveUserScore(this, userId, score);
-                }
-            } catch (Exception e) {
-                LogUtil.e("MentalHealthRecord", "获取服务器分数异常: " + e.getMessage());
-            }
-        }
-        
-        // 如果仍然没有，使用默认分数
-        if (score <= 0) {
-            score = 75; // 默认分数
-            LogUtil.i("MentalHealthRecord", "未找到用户 " + userId + " 的有效分数记录，使用默认分数: " + score);
+            LogUtil.i("MentalHealthRecord", "未找到用户 " + userId + " 的有效分数记录");
         } else {
             LogUtil.i("MentalHealthRecord", "最终使用的分数: " + score + " (用户ID: " + userId + ")");
         }

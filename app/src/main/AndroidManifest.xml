@@ -10,36 +10,66 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
+        android:hardwareAccelerated="true"
+        android:largeHeap="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.example.healthyolder.activity.MainActivity">
-
+        <activity android:name="com.example.healthyolder.activity.MainActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden">
         </activity>
-        <activity android:name="com.example.healthyolder.activity.LoginActivity"    >
+        <activity android:name="com.example.healthyolder.activity.LoginActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.healthyolder.activity.RegisterActivity"     />
-        <activity android:name="com.example.healthyolder.activity.MineActivity">
-
+        <activity android:name="com.example.healthyolder.activity.RegisterActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity android:name="com.example.healthyolder.activity.MineActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden">
         </activity>
-        <activity android:name="com.example.healthyolder.activity.EditPasswordActivity">
-
+        <activity android:name="com.example.healthyolder.activity.EditPasswordActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden">
         </activity>
-        <activity android:name="com.example.healthyolder.activity.AboutActivity"        />
-        <activity android:name=".activity.WordActivity"     />
-        <activity android:name=".activity.WordPicActivity"      />
-        <activity android:name=".activity.WordVideoActivity"            />
-        <activity android:name=".activity.HealthyTestActivity"              />
-        <activity android:name=".activity.CommonActivity"                   />
-        <activity android:name=".activity.AidGuideActivity"                 />
-        <activity android:name=".activity.MyFavActivity"                    />
-        <activity android:name=".activity.DoctorDetailActivity"             />
-        <activity android:name=".activity.PayActivity"                      />
+        <activity android:name="com.example.healthyolder.activity.AboutActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity android:name=".activity.WordActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity android:name=".activity.WordPicActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity android:name=".activity.WordVideoActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity android:name=".activity.HealthyTestActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity android:name=".activity.CommonActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity android:name=".activity.AidGuideActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity android:name=".activity.MyFavActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity android:name=".activity.DoctorDetailActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity android:name=".activity.PayActivity"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity android:name=".activity.MentalHealthRecordActivity"
             android:screenOrientation="portrait"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/AppTheme"/>
     </application>
 

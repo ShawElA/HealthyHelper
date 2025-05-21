@@ -6,7 +6,7 @@ public class UserInfo {
 
     /**
      * success : true
-     * data : [{"u_id":"1","nickname":"weven","u_mobile":"13750435172","u_pwd":"123456","u_sex":"0","u_email":"597777714044@qq.com","u_time":"0000-00-00 00:00:00","u_icon":"","depression_score":"10","last_test_time":"2025-03-01 00:00:00"}]
+     * data : [{"u_id":"1","username":"weven","nickname":"weven","u_mobile":"13750435172","u_pwd":"123456","u_sex":"0","u_email":"597777714044@qq.com","u_time":"0000-00-00 00:00:00","u_icon":"","depression_score":"10","last_test_time":"2025-03-01 00:00:00"}]
      * result : 登录成功
      */
 
@@ -41,6 +41,7 @@ public class UserInfo {
     public static class DataBean {
         /**
          * u_id : 1
+         * username : weven
          * nickname : weven
          * u_mobile : 13750435172
          * u_pwd : 123456
@@ -53,6 +54,7 @@ public class UserInfo {
          */
 
         private String u_id;
+        private String username;
         private String nickname;
         private String u_mobile;
         private String u_pwd;
@@ -88,6 +90,14 @@ public class UserInfo {
 
         public void setU_id(String u_id) {
             this.u_id = u_id;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
         }
 
         public String getNickname() {

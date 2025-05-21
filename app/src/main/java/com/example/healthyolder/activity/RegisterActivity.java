@@ -30,6 +30,8 @@ public class RegisterActivity extends BaseActivity {
 
     @BindView(R.id.et_account)
     EditText et_account;
+    @BindView(R.id.et_nickname)
+    EditText et_nickname;
     @BindView(R.id.et_number)
     EditText et_number;
     @BindView(R.id.et_email)
@@ -94,8 +96,16 @@ public class RegisterActivity extends BaseActivity {
     public void onAccountChange(CharSequence s){
         if (TextUtil.isValidate(s)) {
             isAccount = true;
+            et_account.setError(null);
+            // 当账号改变时，如果昵称为空，则自动填充昵称
+            if (!TextUtil.isValidate(et_nickname.getText())) {
+                et_nickname.setText(s);
+                // 将光标移到文本末尾
+                et_nickname.setSelection(s.length());
+            }
         } else {
             isAccount = false;
+            et_account.setError("账号不能为空");
         }
         setLoginButtonState();
     }
@@ -104,8 +114,14 @@ public class RegisterActivity extends BaseActivity {
     public void onNumberChange(CharSequence s){
         if (TextUtil.isValidate(s) && s.length() == 11) {
             isNumber = true;
+            et_number.setError(null);
         } else {
             isNumber = false;
+            if (!TextUtil.isValidate(s)) {
+                et_number.setError("手机号不能为空");
+            } else if (s.length() != 11) {
+                et_number.setError("请输入11位手机号");
+            }
         }
         setLoginButtonState();
     }
@@ -113,9 +129,18 @@ public class RegisterActivity extends BaseActivity {
     @OnTextChanged(R.id.et_email)
     public void onEmailChange(CharSequence s){
         if (TextUtil.isValidate(s)) {
-            isEmail = true;
+            // 添加邮箱格式验证
+            String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+            if (s.toString().matches(emailPattern)) {
+                isEmail = true;
+                et_email.setError(null);
+            } else {
+                isEmail = false;
+                et_email.setError("请输入有效的邮箱地址");
+            }
         } else {
             isEmail = false;
+            et_email.setError("邮箱不能为空");
         }
         setLoginButtonState();
     }
@@ -124,8 +149,14 @@ public class RegisterActivity extends BaseActivity {
     public void onPasswordChange(CharSequence s){
         if (TextUtil.isValidate(s) && s.length() >= 6) {
             isPassword = true;
+            et_password.setError(null);
         } else {
             isPassword = false;
+            if (!TextUtil.isValidate(s)) {
+                et_password.setError("密码不能为空");
+            } else if (s.length() < 6) {
+                et_password.setError("密码长度至少6位");
+            }
         }
         setLoginButtonState();
     }
@@ -133,9 +164,20 @@ public class RegisterActivity extends BaseActivity {
     @OnTextChanged(R.id.et_password_again)
     public void onPasswordAgainChange(CharSequence s){
         if (TextUtil.isValidate(s) && s.length() >= 6) {
-            isPasswordAgain = true;
+            if (s.toString().equals(et_password.getText().toString())) {
+                isPasswordAgain = true;
+                et_password_again.setError(null);
+            } else {
+                isPasswordAgain = false;
+                et_password_again.setError("两次输入的密码不一致");
+            }
         } else {
             isPasswordAgain = false;
+            if (!TextUtil.isValidate(s)) {
+                et_password_again.setError("请再次输入密码");
+            } else if (s.length() < 6) {
+                et_password_again.setError("密码长度至少6位");
+            }
         }
         setLoginButtonState();
     }
@@ -151,7 +193,11 @@ public class RegisterActivity extends BaseActivity {
         
         if (et_password.getText().toString().equals(et_password_again.getText().toString())){
             Map<String, String> parameter = new HashMap<>();
-            parameter.put("username", et_account.getText().toString());
+            String username = et_account.getText().toString();
+            String nickname = et_nickname.getText().toString().trim();
+            parameter.put("username", username);
+            // 只有当昵称为空时才使用用户名作为昵称
+            parameter.put("nickname", nickname.isEmpty() ? username : nickname);
             parameter.put("cell_phone", et_number.getText().toString());
             parameter.put("password", et_password.getText().toString());
             parameter.put("email", et_email.getText().toString());

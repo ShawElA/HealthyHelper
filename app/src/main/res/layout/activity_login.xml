@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:background="@drawable/translucent_background"
-        android:padding="16dp"
+        android:padding="24dp"
         android:gravity="center_horizontal">
 
         <!-- App Logo -->
@@ -40,8 +40,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
-            app:boxStrokeColor="@color/colorTheme"
-            app:hintTextColor="@color/colorTheme"
+            app:boxStrokeColor="@color/colorPrimary"
+            app:hintTextColor="@color/colorPrimary"
+            app:boxBackgroundColor="@color/white"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
             
             <EditText
@@ -50,7 +55,8 @@
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
                 android:textColor="@color/colorDark"
-                android:padding="16dp"
+                android:textSize="16sp"
+                android:padding="12dp"
                 android:drawableStart="@drawable/ic_person"
                 android:drawablePadding="8dp"
                 android:hint="账号" />
@@ -61,8 +67,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            app:boxStrokeColor="@color/colorTheme"
-            app:hintTextColor="@color/colorTheme"
+            app:boxStrokeColor="@color/colorPrimary"
+            app:hintTextColor="@color/colorPrimary"
+            app:boxBackgroundColor="@color/white"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
             app:passwordToggleEnabled="true"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
             
@@ -72,7 +83,8 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:textColor="@color/colorDark"
-                android:padding="16dp"
+                android:textSize="16sp"
+                android:padding="12dp"
                 android:drawableStart="@drawable/ic_lock"
                 android:drawablePadding="8dp"
                 android:hint="密码"/>
@@ -85,11 +97,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="24dp"
-            android:padding="16dp"
+            android:padding="12dp"
             android:background="@drawable/bg_btn_theme_pale_circle"
             android:textColor="@color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
+            android:textSize="22sp"
             android:elevation="4dp"
             android:text="登录"/>
 
@@ -99,7 +110,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:textColor="@color/colorTheme"
+            android:textColor="@color/colorPrimary"
             android:text="没有账号？点击注册"
             android:textSize="16sp"/>
 

@@ -147,8 +147,12 @@ public class HomeFragment extends Fragment {
                     LogUtil.e("HomeFragment", "sportStepCount为空，无法更新UI");
                 }
             } else {
-                // 5. 如果没有找到用户特定分数，尝试从服务器获取
-                requestLatestScoreFromServer(userId);
+                // 5. 如果没有找到用户特定分数，显示提示信息
+                if (sportStepCount != null) {
+                    sportStepCount.setCurrentCount(100, 0);
+                    sportStepCountInfo.setText("您还没有进行过抑郁测试\n点击此处开始测试");
+                }
+                LogUtil.i("HomeFragment", "用户 " + userId + " 没有测试记录");
             }
         } catch (Exception e) {
             LogUtil.e("HomeFragment", "初始化分数数据出错: " + e.getMessage());
