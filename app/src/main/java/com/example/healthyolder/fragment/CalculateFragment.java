@@ -1,6 +1,14 @@
 package com.example.healthyolder.fragment;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.os.Build;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +17,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.healthyolder.BaseApplication;
 import com.example.healthyolder.R;
@@ -37,6 +48,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import androidx.fragment.app.Fragment;
@@ -68,12 +80,21 @@ public class CalculateFragment extends Fragment{
     EditText et_comment;
     @BindView(R.id.btn_send)
     View btn_send;
+    @BindView(R.id.btn_voice)
+    View btn_voice;
     
     private List<ChatResult.DataBean> arrayList = new ArrayList<>();
     private CommonAdapter<ChatResult.DataBean> adapter;
     private String gid = "1";
     private String gName = "与智能医生聊天";
     private boolean isProcessing = false;
+    
+    // 语音识别相关变量
+    private SpeechRecognizer speechRecognizer;
+    private boolean isListening = false;
+    private static final int PERMISSION_REQUEST_RECORD_AUDIO = 1;
+    // 语音识别功能可用状态
+    private boolean isSpeechRecognitionAvailable = false;
 
     public static CalculateFragment newInstance(String param1, String param2) {
         CalculateFragment fragment = new CalculateFragment();
@@ -109,10 +130,320 @@ public class CalculateFragment extends Fragment{
         }
         et_comment.setText("");
     }
+    
+    // 处理语音输入按钮点击事件
+    @OnClick(R.id.btn_voice)
+    public void startVoiceInput() {
+        // 如果正在处理消息，不允许语音输入
+        if (isProcessing) {
+            ToastUtil.showBottomToast("请等待上一条消息处理完成");
+            return;
+        }
+        
+        // 检查语音识别是否可用
+        if (!isSpeechRecognitionAvailable) {
+            checkSpeechRecognitionAvailability();
+            if (!isSpeechRecognitionAvailable) {
+                ToastUtil.showBottomToast("您的设备不支持语音识别功能");
+                return;
+            }
+        }
+        
+        // 如果正在监听，点击按钮停止监听
+        if (isListening) {
+            stopListening();
+            return;
+        }
+        
+        // 检查并请求录音权限
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.RECORD_AUDIO},
+                    PERMISSION_REQUEST_RECORD_AUDIO);
+        } else {
+            // 已有权限，开始语音识别
+            startListening();
+        }
+    }
+    
+    // 检查语音识别服务是否可用
+    private void checkSpeechRecognitionAvailability() {
+        // 检查设备是否支持语音识别
+        PackageManager pm = getContext().getPackageManager();
+        List<ResolveInfo> activities = pm.queryIntentActivities(
+                new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
+        
+        if (activities.size() == 0) {
+            isSpeechRecognitionAvailable = false;
+            LogUtil.i("SpeechRecognition", "设备不支持语音识别");
+        } else {
+            try {
+                // 尝试创建语音识别器
+                SpeechRecognizer testRecognizer = SpeechRecognizer.createSpeechRecognizer(getContext());
+                if (testRecognizer != null) {
+                    testRecognizer.destroy();
+                    isSpeechRecognitionAvailable = true;
+                    LogUtil.i("SpeechRecognition", "语音识别可用");
+                } else {
+                    isSpeechRecognitionAvailable = false;
+                    LogUtil.i("SpeechRecognition", "无法创建语音识别器");
+                }
+            } catch (Exception e) {
+                isSpeechRecognitionAvailable = false;
+                LogUtil.i("SpeechRecognition", "语音识别初始化异常: " + e.getMessage());
+            }
+        }
+    }
+    
+    // 使用系统语音识别活动作为备选方案
+    private void startSpeechRecognitionActivity() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.CHINA.toString());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "请说出您的问题");
+        
+        try {
+            startActivityForResult(intent, 1000);
+        } catch (Exception e) {
+            ToastUtil.showBottomToast("无法启动语音识别");
+            LogUtil.e("SpeechRecognition", "启动语音识别活动失败: " + e.getMessage());
+        }
+    }
+    
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (requestCode == 1000 && resultCode == getActivity().RESULT_OK && data != null) {
+            ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            if (results != null && !results.isEmpty()) {
+                String text = results.get(0);
+                et_comment.setText(text);
+                et_comment.setSelection(text.length());
+            }
+        }
+    }
+    
+    // 开始语音识别
+    private void startListening() {
+        try {
+            // 初始化SpeechRecognizer
+            if (speechRecognizer == null) {
+                speechRecognizer = SpeechRecognizer.createSpeechRecognizer(getContext());
+                speechRecognizer.setRecognitionListener(recognitionListener);
+            }
+            
+            // 创建识别Intent
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.CHINA.toString()); // 设置为中文
+            intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+            intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getContext().getPackageName());
+            
+            // 开始监听
+            isListening = true;
+            ToastUtil.showBottomToast("请开始说话...");
+            LogUtil.i("SpeechRecognition", "开始语音识别");
+            
+            // 更改按钮状态（例如颜色或图标）以表示正在录音
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                btn_voice.setBackgroundTintList(
+                        ContextCompat.getColorStateList(getContext(), R.color.colorAccent));
+            }
+            
+            speechRecognizer.startListening(intent);
+        } catch (Exception e) {
+            LogUtil.e("SpeechRecognition", "启动语音识别失败: " + e.getMessage());
+            isListening = false;
+            ToastUtil.showBottomToast("启动语音识别失败，尝试备选方案");
+            
+            // 失败后尝试使用活动方式启动语音识别
+            startSpeechRecognitionActivity();
+        }
+    }
+    
+    // 停止语音识别
+    private void stopListening() {
+        if (speechRecognizer != null) {
+            try {
+                speechRecognizer.stopListening();
+                LogUtil.i("SpeechRecognition", "停止语音识别");
+            } catch (Exception e) {
+                LogUtil.e("SpeechRecognition", "停止语音识别出错: " + e.getMessage());
+            }
+        }
+        isListening = false;
+        
+        // 恢复按钮状态
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            btn_voice.setBackgroundTintList(
+                    ContextCompat.getColorStateList(getContext(), R.color.colorTheme));
+        }
+    }
+    
+    // 语音识别监听器
+    private RecognitionListener recognitionListener = new RecognitionListener() {
+        @Override
+        public void onReadyForSpeech(Bundle bundle) {
+            // 准备好说话时
+            LogUtil.i("SpeechRecognition", "onReadyForSpeech");
+        }
+
+        @Override
+        public void onBeginningOfSpeech() {
+            // 开始说话时
+            LogUtil.i("SpeechRecognition", "onBeginningOfSpeech");
+        }
+
+        @Override
+        public void onRmsChanged(float v) {
+            // 语音音量变化
+        }
+
+        @Override
+        public void onBufferReceived(byte[] bytes) {
+            // 接收到语音数据
+            LogUtil.i("SpeechRecognition", "onBufferReceived");
+        }
+
+        @Override
+        public void onEndOfSpeech() {
+            // 说话结束时
+            LogUtil.i("SpeechRecognition", "onEndOfSpeech");
+            isListening = false;
+            
+            // 恢复按钮状态
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            btn_voice.setBackgroundTintList(
+                                    ContextCompat.getColorStateList(getContext(), R.color.colorTheme));
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onError(int errorCode) {
+            // 识别错误时
+            isListening = false;
+            LogUtil.e("SpeechRecognition", "onError: " + errorCode);
+            
+            // 恢复按钮状态
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            btn_voice.setBackgroundTintList(
+                                    ContextCompat.getColorStateList(getContext(), R.color.colorTheme));
+                        }
+                        
+                        // 根据错误码显示不同提示
+                        String message;
+                        switch (errorCode) {
+                            case SpeechRecognizer.ERROR_AUDIO:
+                                message = "音频录制出错";
+                                break;
+                            case SpeechRecognizer.ERROR_CLIENT:
+                                message = "客户端出错";
+                                break;
+                            case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
+                                message = "缺少录音权限";
+                                break;
+                            case SpeechRecognizer.ERROR_NETWORK:
+                                message = "网络连接错误";
+                                break;
+                            case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
+                                message = "网络连接超时";
+                                break;
+                            case SpeechRecognizer.ERROR_NO_MATCH:
+                                message = "未识别到语音";
+                                break;
+                            case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+                                message = "识别服务忙";
+                                break;
+                            case SpeechRecognizer.ERROR_SERVER:
+                                message = "服务器错误";
+                                break;
+                            case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                                message = "未检测到语音输入";
+                                break;
+                            default:
+                                message = "语音识别出错";
+                                break;
+                        }
+                        ToastUtil.showBottomToast(message);
+                        
+                        // 大多数错误情况下，尝试备选方案
+                        if (errorCode != SpeechRecognizer.ERROR_NO_MATCH && 
+                            errorCode != SpeechRecognizer.ERROR_SPEECH_TIMEOUT) {
+                            startSpeechRecognitionActivity();
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onResults(Bundle results) {
+            // 识别结果返回
+            LogUtil.i("SpeechRecognition", "onResults");
+            ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+            
+            if (matches != null && !matches.isEmpty()) {
+                final String text = matches.get(0);
+                LogUtil.i("SpeechRecognition", "识别结果: " + text);
+                
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // 将识别结果添加到输入框
+                            et_comment.setText(text);
+                            // 将光标移至末尾
+                            et_comment.setSelection(text.length());
+                        }
+                    });
+                }
+            }
+        }
+
+        @Override
+        public void onPartialResults(Bundle bundle) {
+            // 部分识别结果返回
+            LogUtil.i("SpeechRecognition", "onPartialResults");
+        }
+
+        @Override
+        public void onEvent(int i, Bundle bundle) {
+            // 其他事件
+            LogUtil.i("SpeechRecognition", "onEvent: " + i);
+        }
+    };
+
+    // 处理权限请求结果
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_RECORD_AUDIO) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 权限获取成功，开始语音识别
+                startListening();
+            } else {
+                // 权限被拒绝
+                ToastUtil.showBottomToast("需要录音权限才能使用语音输入功能");
+            }
+        }
+    }
 
     private void setProcessingState(boolean processing) {
         isProcessing = processing;
         btn_send.setEnabled(!processing);
+        btn_voice.setEnabled(!processing);
         
         // 如果正在处理，添加一个临时的"正在输入..."消息
         if (processing) {
@@ -125,7 +456,10 @@ public class CalculateFragment extends Fragment{
     private void addTypingIndicator() {
         // 临时添加一个"医生正在输入..."的消息
         ChatResult.DataBean typingIndicator = new ChatResult.DataBean();
-        typingIndicator.setC_uid("-1"); // AI的ID
+        // AI的ID为当前用户ID的负数
+        String userId = BaseApplication.getUserId();
+        String aiUserId = "-" + userId;
+        typingIndicator.setC_uid(aiUserId);
         typingIndicator.setC_remark("医生正在思考...");
         typingIndicator.setC_date(System.currentTimeMillis() + "");
         typingIndicator.setTemp_id("typing_indicator");
@@ -161,7 +495,7 @@ public class CalculateFragment extends Fragment{
         Map<String, String> systemMessage = new HashMap<>();
         systemMessage.put("role", "system");
         systemMessage.put("content", "你是一个专业的医生助手，你专门面向老年人抑郁症患者或潜在患者，请以专业、友好的口吻回答用户的健康问题，不时对用户进行鼓励。" +
-                "在回复时允许使用Markdown语法使内容更清晰。");
+                "在回复时允许使用Markdown语法使内容更清晰。请不要使用表情符号和特殊字符。");
         messages.add(systemMessage);
         
         // 添加用户消息
@@ -210,6 +544,9 @@ public class CalculateFragment extends Fragment{
                                 if (message != null && message.getContent() != null) {
                                     String aiResponse = message.getContent().trim();
                                     
+                                    // 过滤AI回复中的emoji和特殊字符
+                                    aiResponse = filterSpecialCharacters(aiResponse);
+                                    
                                     // 先在UI上显示AI回复
                                     addLocalAIMessage(aiResponse);
                                     
@@ -233,6 +570,29 @@ public class CalculateFragment extends Fragment{
         });
     }
 
+    /**
+     * 过滤特殊字符，移除emoji和其他可能导致数据库存储问题的字符
+     * @param input 原始文本
+     * @return 过滤后的文本
+     */
+    private String filterSpecialCharacters(String input) {
+        if (input == null) {
+            return "";
+        }
+        
+        try {
+            // 移除emoji和其他非BMP字符（4字节Unicode字符）
+            // 这将移除大多数可能导致MySQL utf8编码问题的字符
+            return input.replaceAll("[^\\u0000-\\uFFFF]", "")
+                    // 替换一些可能导致问题的控制字符
+                    .replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "");
+        } catch (Exception e) {
+            LogUtil.e("CharFilter", "过滤特殊字符出错: " + e.getMessage());
+            // 如果过滤出错，则尝试更强力的过滤方法
+            return input.replaceAll("[^\\p{ASCII}]", "");
+        }
+    }
+
     // 添加本地消息显示，不从服务器刷新
     private void addLocalUserMessage(String message) {
         ChatResult.DataBean localMsg = new ChatResult.DataBean();
@@ -251,7 +611,11 @@ public class CalculateFragment extends Fragment{
     // 添加本地AI回复，不从服务器刷新
     private void addLocalAIMessage(String message) {
         ChatResult.DataBean localMsg = new ChatResult.DataBean();
-        localMsg.setC_uid("-1"); // AI的ID
+        // 将AI的c_uid设为用户ID的负数形式，而不是统一的"-1"
+        String userId = BaseApplication.getUserId();
+        String aiUserId = "-" + userId; // 用户对应的AI回答ID为用户ID的负数
+        
+        localMsg.setC_uid(aiUserId);
         localMsg.setC_remark(message);
         localMsg.setC_date(System.currentTimeMillis() + "");
         localMsg.setTemp_id("local_ai_" + System.currentTimeMillis());
@@ -268,6 +632,15 @@ public class CalculateFragment extends Fragment{
         Map<String, String> p = new HashMap<>();
         p.put("g_id", gid);
         p.put("remark", content);
+        
+        // 如果是AI回复，将c_uid设为用户ID的负数形式
+        if (uid.equals("-1")) {
+            // 获取当前用户ID
+            String userId = BaseApplication.getUserId();
+            // 将AI的uid设为用户ID的负数
+            uid = "-" + userId;
+        }
+        
         p.put("u_id", uid);
         p.put("type", "0");
         HttpUtil.getResponse(Urls.SENDMESSAGE, p, null, new ObjectCallBack<EmptyResult>(EmptyResult.class) {
@@ -352,6 +725,10 @@ public class CalculateFragment extends Fragment{
             view = inflater.inflate(R.layout.fragment_calculate, container, false);
         }
         ButterKnife.bind(this, view);
+        
+        // 初始化时检查语音识别可用性
+        checkSpeechRecognitionAvailability();
+        
         initData();
         initEvent();
         return view;
@@ -427,18 +804,26 @@ public class CalculateFragment extends Fragment{
                     LinearLayout ll_me = holder.getView(R.id.ll_me);
                     
                     // 检查消息发送者
+                    String userId = BaseApplication.getUserId();
+                    String aiUserId = "-" + userId; // 用户对应的AI回答ID
+                    
                     // 如果消息是当前用户发送的，显示在右侧
-                    if (o.getC_uid().equals(BaseApplication.getUserId())){
+                    if (o.getC_uid().equals(userId)){
                         ll_me.setVisibility(View.VISIBLE);
                         ll_other.setVisibility(View.GONE);
                         tv_me.setText(o.getC_remark());
                     }
-                    // 如果消息是AI（-1）发送的，显示在左侧并使用Markdown渲染
-                    else {
+                    // 如果消息是对应AI发送的（用户ID的负数），显示在左侧并使用Markdown渲染
+                    else if (o.getC_uid().equals(aiUserId)){
                         ll_other.setVisibility(View.VISIBLE);
                         ll_me.setVisibility(View.GONE);
                         // 使用Markdown渲染AI回复
                         MarkdownUtil.setMarkdown(getContext(), tv_other, o.getC_remark());
+                    }
+                    // 其他情况（例如其他用户的消息）不显示
+                    else {
+                        ll_other.setVisibility(View.GONE);
+                        ll_me.setVisibility(View.GONE);
                     }
                 }
             };
@@ -467,7 +852,10 @@ public class CalculateFragment extends Fragment{
     private void showWelcomeMessage() {
         // 只在UI上显示欢迎消息，不存入数据库
         ChatResult.DataBean welcomeMsg = new ChatResult.DataBean();
-        welcomeMsg.setC_uid("-1"); // AI的ID
+        // AI的ID为当前用户ID的负数
+        String userId = BaseApplication.getUserId();
+        String aiUserId = "-" + userId;
+        welcomeMsg.setC_uid(aiUserId);
         welcomeMsg.setC_remark("您好！我是智能医生助手，很高兴为您服务。请问有什么健康问题需要咨询吗？");
         welcomeMsg.setC_date(System.currentTimeMillis() + "");
         welcomeMsg.setTemp_id("welcome_msg");
@@ -482,5 +870,20 @@ public class CalculateFragment extends Fragment{
     private void setLayoutVisible(int v1, int v2){
         rl_no_data.setVisibility(v1);
         rv_comment.setVisibility(v2);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        
+        // 释放语音识别器资源
+        if (speechRecognizer != null) {
+            try {
+                speechRecognizer.destroy();
+                speechRecognizer = null;
+            } catch (Exception e) {
+                LogUtil.e("SpeechRecognition", "销毁语音识别器出错: " + e.getMessage());
+            }
+        }
     }
 }
