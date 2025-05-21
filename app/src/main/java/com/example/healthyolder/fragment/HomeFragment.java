@@ -64,18 +64,6 @@ public class HomeFragment extends Fragment {
         IntentUtil.startActivity(getActivity(), CommonActivity.class);
     }
 
-    @OnClick(R.id.tv_test2)
-    public void test2(){
-        if (getActivity() instanceof MainActivity) {
-            ((MainActivity) getActivity()).switchToEmpowerPage();
-        } else {
-            ToastUtil.showBottomToast("即将前往赋能减压界面");
-            Bundle args = new Bundle();
-            args.putInt("tabIndex", 3); // 赋能减压在底部导航中的索引
-            IntentUtil.startActivity(getActivity(), MainActivity.class, args);
-        }
-    }
-
     @OnClick(R.id.tv_health_record)
     public void openHealthRecord() {
         IntentUtil.startActivity(getActivity(), MentalHealthRecordActivity.class);
@@ -291,13 +279,13 @@ public class HomeFragment extends Fragment {
     private void changeHint(int g){
         currentScore = g;
         if (g < 60){
-            sportStepCountInfo.setText("疑重度抑郁，请遵从医嘱进行治疗");
+            sportStepCountInfo.setText("疑重度抑郁，请遵从医嘱进行治疗\n点击此处前往预约挂号");
         }else if (g < 70){
-            sportStepCountInfo.setText("疑中度抑郁，可尝试从心理治疗再到药物治疗进行恢复");
+            sportStepCountInfo.setText("疑中度抑郁，可尝试与智能医生进行对话，获得初步建议\n点击此处咨询智能医生");
         }else if (g < 80){
-            sportStepCountInfo.setText("疑轻度抑郁，建议可从生活方式进行调整，或者寻求社交支持，与朋友、家人保持良好沟通");
+            sportStepCountInfo.setText("疑轻度抑郁，建议可从生活方式进行调整，或者寻求社交支持\n点击此处前往赋能减压");
         }else {
-            sportStepCountInfo.setText("无或最低限度抑郁症状。保持健康生活习惯，如规律作息、均衡饮食、适度运动");
+            sportStepCountInfo.setText("无或最低限度抑郁症状。保持健康生活习惯即可，如规律作息、均衡饮食、适度运动\n点击此处前往赋能减压");
         }
     }
 

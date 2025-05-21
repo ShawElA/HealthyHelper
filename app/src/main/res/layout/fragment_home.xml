@@ -134,7 +134,7 @@
                         android:layout_marginTop="8dp"
                         android:text="抑郁自测"
                         android:textColor="@color/colorLight"
-                        android:textSize="18sp"
+                        android:textSize="22sp"
                         android:textStyle="bold"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -169,7 +169,7 @@
                         android:layout_marginTop="8dp"
                         android:text="抑郁了,怎么办"
                         android:textColor="@color/colorLight"
-                        android:textSize="16sp"
+                        android:textSize="22sp"
                         android:textStyle="bold"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -182,45 +182,8 @@
             android:layout_marginTop="16dp">
 
             <androidx.cardview.widget.CardView
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
-
-                <LinearLayout
-                    android:id="@+id/tv_test2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:background="@color/ThemeGreen"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:padding="16dp">
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@android:drawable/ic_menu_manage"
-                        app:tint="@color/colorLight"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="赋能减压"
-                        android:textColor="@color/colorLight"
-                        android:textSize="18sp"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="4dp">
 
@@ -246,7 +209,7 @@
                         android:layout_marginStart="16dp"
                         android:text="心理健康档案"
                         android:textColor="@color/colorLight"
-                        android:textSize="18sp"
+                        android:textSize="22sp"
                         android:textStyle="bold"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
