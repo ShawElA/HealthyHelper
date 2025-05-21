@@ -258,6 +258,33 @@
                             android:layout_width="25dp"
                             android:layout_height="25dp" />
                     </RelativeLayout>
+                    
+                    <RelativeLayout
+                        android:id="@+id/rl_delete_account"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:padding="12dp"
+                        android:background="@color/colorLight"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:padding="2dp"
+                            android:layout_centerVertical="true"
+                            android:src="@mipmap/nav_menu_logout"
+                            android:contentDescription="@null"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp" />
+                        <TextView                            android:layout_centerVertical="true"                            android:layout_marginLeft="40dp"                            android:textSize="14sp"                            android:textColor="#FF3B30"                            android:text="@string/setting_delete_account"                            android:layout_gravity="center"                            android:layout_width="wrap_content"                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:padding="6dp"
+                            android:src="@mipmap/btn_go_gray"
+                            android:contentDescription="@null"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp" />
+                    </RelativeLayout>
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
 

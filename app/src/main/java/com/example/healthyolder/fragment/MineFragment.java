@@ -12,18 +12,29 @@ import com.example.healthyolder.BaseApplication;
 import com.example.healthyolder.R;
 import com.example.healthyolder.activity.AboutActivity;
 import com.example.healthyolder.activity.EditPasswordActivity;
+import com.example.healthyolder.activity.LoginActivity;
 import com.example.healthyolder.activity.MineActivity;
 import com.example.healthyolder.activity.MyFavActivity;
 import com.example.healthyolder.bean.Configs;
 import com.example.healthyolder.bean.Urls;
+import com.example.healthyolder.util.EmptyResult;
+import com.example.healthyolder.util.HttpUtil;
 import com.example.healthyolder.util.IntentUtil;
+import com.example.healthyolder.util.ObjectCallBack;
+import com.example.healthyolder.util.PreferenceUtil;
+import com.example.healthyolder.util.SPUtil;
+import com.example.healthyolder.util.ToastUtil;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.interfaces.OnConfirmListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.Call;
 
 
 public class MineFragment extends Fragment {
@@ -74,6 +85,76 @@ public class MineFragment extends Fragment {
                 }, null, false)
                 .show();
     }
+    
+    @OnClick(R.id.rl_delete_account)
+    public void deleteAccount(){
+        new XPopup.Builder(getContext())
+                .asConfirm("注销账号", "注销账号后，您的所有数据将被删除且无法恢复，确定要注销账号吗？",
+                "取消", "确定注销",
+                new OnConfirmListener() {
+                    @Override
+                    public void onConfirm() {
+                        // 执行账号注销
+                        performAccountDeletion();
+                    }
+                }, null, false)
+                .show();
+    }
+    
+    /**
+     * 执行账号注销操作
+     */
+    private void performAccountDeletion() {
+        Map<String, String> parameter = new HashMap<>();
+        parameter.put("u_id", BaseApplication.getUserId());
+        
+        HttpUtil.postResponse(Urls.DELETEACCOUNT, parameter, getActivity(), new ObjectCallBack<EmptyResult>(EmptyResult.class) {
+            @Override
+            public void onSuccess(EmptyResult response) {
+                if (response == null) {
+                    return;
+                }
+                
+                if (response.isSuccess()) {
+                    ToastUtil.showBottomToast("账号已成功注销");
+                    
+                    // 清除本地用户数据
+                    clearLocalUserData();
+                    
+                    // 返回登录页面
+                    IntentUtil.startActivityAndFinishAll(getActivity(), LoginActivity.class);
+                } else {
+                    ToastUtil.showBottomToast(response.getResult());
+                }
+            }
+
+            @Override
+            public void onFail(Call call, Exception e) {
+                ToastUtil.showBottomToast("注销失败，请重试");
+            }
+        });
+    }
+    
+    /**
+     * 清除本地用户数据
+     */
+    private void clearLocalUserData() {
+        // 清空BaseApplication中的用户数据
+        BaseApplication.setUserId("");
+        BaseApplication.setUserNickname("");
+        BaseApplication.setPassword("");
+        BaseApplication.setIcon("");
+        
+        // 清空SPUtil中的用户数据
+        if (getContext() != null) {
+            SPUtil.putString(getContext(), SPUtil.USER_ID, "");
+            SPUtil.putString(getContext(), SPUtil.USER_NAME, "");
+        }
+        
+        // 清空PreferenceUtil中的用户数据
+        PreferenceUtil.putString("userId", "");
+    }
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

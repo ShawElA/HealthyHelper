@@ -5,6 +5,7 @@
     <string name="setting_setup">密码设置</string>
     <string name="setting_about">关于</string>
     <string name="setting_logout">退出登陆</string>
+    <string name="setting_delete_account">注销账号</string>
     <string name="setting_setup_del">账号和系统设置</string>
     <string name="loginSuccessfully">操作成功</string>
     <string name="loginUnsuccessfully">操作失败</string>

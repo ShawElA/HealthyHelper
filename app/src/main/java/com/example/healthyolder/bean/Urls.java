@@ -10,6 +10,7 @@ public class Urls {
     public static final String USERDATA = baseUrl + "getPersonInfo";              //获取用户个人信息
     public static final String EDITDATA = baseUrl + "editPersonInfo";             //修改用户个人信息
     public static final String EDITPASSWORD = baseUrl + "editPassword";            //修改用户密码
+    public static final String DELETEACCOUNT = baseUrl + "deleteUserAccount";      //注销用户账号
     public static final String UPLOADIMGS = baseUrl + "uploadImgs";            //上传多张图片
 
     public static final String GETALLNOTES = baseUrl + "getAllNotes";   //获取列表

@@ -67,6 +67,20 @@ public class IntentUtil {
         context.startActivity(intent);
 //        context.overridePendingTransition(R.anim.acy_enter_anim,R.anim.acy_exit_anim);
     }
+    
+    /**
+     * 启动Activity并结束所有之前的Activity
+     * 常用于退出登录或注销账号等场景
+     * @param activity 当前活动
+     * @param cls 目标活动类
+     */
+    public static void startActivityAndFinishAll(Activity activity, Class<?> cls) {
+        Intent intent = new Intent(activity, cls);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
+    
     /**
      * Activity启动另一个Activity并返回结果(带参数)
      *
