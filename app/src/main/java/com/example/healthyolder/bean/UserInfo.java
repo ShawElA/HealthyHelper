@@ -60,8 +60,26 @@ public class UserInfo {
         private String u_email;
         private String u_time;
         private String u_icon;
+        
+        /**
+         * @deprecated 已弃用，使用depression_test_history表代替
+         * 仅为兼容旧版API响应而保留
+         */
+        @Deprecated
         private String depression_score;
+        
+        /**
+         * @deprecated 已弃用，使用depression_test_history表的h_date字段代替
+         * 仅为兼容旧版API响应而保留
+         */
+        @Deprecated
         private String last_test_time;
+        
+        /**
+         * @deprecated 已弃用，使用depression_test_history表代替
+         * 仅为兼容旧版API响应而保留
+         */
+        @Deprecated
         private String test_history;
 
         public String getU_id() {
@@ -128,26 +146,56 @@ public class UserInfo {
             this.u_icon = u_icon;
         }
         
+        /**
+         * @deprecated 已弃用，使用depression_test_history表代替
+         * 仅为兼容旧版API响应而保留
+         */
+        @Deprecated
         public String getDepression_score() {
             return depression_score;
         }
 
+        /**
+         * @deprecated 已弃用，使用depression_test_history表代替
+         * 仅为兼容旧版API响应而保留
+         */
+        @Deprecated
         public void setDepression_score(String depression_score) {
             this.depression_score = depression_score;
         }
 
+        /**
+         * @deprecated 已弃用，使用depression_test_history表的h_date字段代替
+         * 仅为兼容旧版API响应而保留
+         */
+        @Deprecated
         public String getLast_test_time() {
             return last_test_time;
         }
 
+        /**
+         * @deprecated 已弃用，使用depression_test_history表的h_date字段代替
+         * 仅为兼容旧版API响应而保留
+         */
+        @Deprecated
         public void setLast_test_time(String last_test_time) {
             this.last_test_time = last_test_time;
         }
 
+        /**
+         * @deprecated 已弃用，使用depression_test_history表代替
+         * 仅为兼容旧版API响应而保留
+         */
+        @Deprecated
         public String getTest_history() {
             return test_history;
         }
 
+        /**
+         * @deprecated 已弃用，使用depression_test_history表代替
+         * 仅为兼容旧版API响应而保留
+         */
+        @Deprecated
         public void setTest_history(String test_history) {
             this.test_history = test_history;
         }

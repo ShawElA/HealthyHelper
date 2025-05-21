@@ -28,6 +28,16 @@ public class HttpUtil {
      * @param responseCallback 回调函数，处理返回的响应
      */
     public static void get(String apiPath, final ResponseCallback responseCallback) {
+        get(apiPath, null, responseCallback);
+    }
+    
+    /**
+     * GET请求方法（带参数版本）
+     * @param apiPath API路径
+     * @param params 请求参数
+     * @param responseCallback 回调函数
+     */
+    public static void get(String apiPath, Map<String, String> params, final ResponseCallback responseCallback) {
         // 如果传入的是完整URL（包含http://），则直接使用
         String url;
         if (apiPath.startsWith("http://") || apiPath.startsWith("https://")) {
@@ -39,9 +49,19 @@ public class HttpUtil {
         }
         
         LogUtil.i("GET URL", url);
+        if (params != null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("GET params: {\n");
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                sb.append("  ").append(entry.getKey()).append(": ").append(entry.getValue()).append(",\n");
+            }
+            sb.append("}");
+            LogUtil.i("HTTP GET Params", sb.toString());
+        }
         
         OkHttpUtils.get()
                 .url(url)
+                .params(params)
                 .build()
                 .connTimeOut(CONNECT_TIMEOUT)
                 .readTimeOut(READ_TIMEOUT)

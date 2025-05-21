@@ -27,12 +27,14 @@ public class Urls {
     public static final String GETFAVESSAY = baseUrl + "getFavEssay";              //点赞过的文章
     public static final String DETAILUSER = baseUrl + "selectAllUser";      //获取医生
     
-    // 抑郁自测相关接口
-    public static final String SAVE_DEPRESSION_TEST = baseUrl + "api/depression/save";    //保存抑郁测试记录
-    public static final String GET_DEPRESSION_HISTORY = baseUrl + "api/depression/history";  //获取测试历史
-    public static final String GET_LATEST_SCORE = baseUrl + "api/depression/latest";  //获取最新得分
+    // 抑郁自测相关接口 - 修正为正确的URL格式
+    public static final String DEPRESSION_API_BASE = baseUrl + "api/depression/";          // 抑郁测试API基础URL
+    public static final String INIT_DEPRESSION_TABLES = DEPRESSION_API_BASE + "init";      // 初始化表结构
+    public static final String SAVE_DEPRESSION_TEST = DEPRESSION_API_BASE + "save";        // 保存抑郁测试记录
+    public static final String GET_DEPRESSION_HISTORY = DEPRESSION_API_BASE + "history/";  // 获取测试历史 - 需附加用户ID
+    public static final String GET_LATEST_SCORE = DEPRESSION_API_BASE + "latest/";         // 获取最新得分 - 需附加用户ID
     
     // 预约咨询实际接口
-    // public static final String GET_AVAILABLE_TIMES = baseUrl + "getAvailableTimes";   // 获取医生可预约时间
-    // public static final String CREATE_APPOINTMENT = baseUrl + "createAppointment";    // 创建预约
+    // public static final String GET_AVAILABLE_TIMES = baseUrl + "getAvailableTimes";     // 获取医生可预约时间
+    // public static final String CREATE_APPOINTMENT = baseUrl + "createAppointment";      // 创建预约
 }

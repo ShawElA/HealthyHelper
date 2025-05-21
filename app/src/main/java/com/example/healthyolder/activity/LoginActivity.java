@@ -114,13 +114,27 @@ public class LoginActivity extends BaseActivity {
                             + ", SPUtil=" + spUserId 
                             + ", PreferenceUtil=" + prefUserId);
                     
-                    // 存储抑郁测试相关数据
+                    // 改为从depression_test_history表获取最新抑郁测试信息
+                    // 临时兼容，使用旧字段，后续应替换为API调用获取历史记录
+                    // TODO: 在未来版本中完全移除此兼容代码，改为直接查询depression_test_history表
                     if (response.getData().get(0).getDepression_score() != null) {
                         String score = response.getData().get(0).getDepression_score();
+                        // 转换为用户特定存储，而不是全局存储
+                        try {
+                            int scoreInt = Integer.parseInt(score);
+                            // 保存到用户特定存储
+                            SPUtil.saveUserScore(LoginActivity.this, userId, scoreInt);
+                            LogUtil.i("Login", "保存用户 " + userId + " 的抑郁分数: " + scoreInt);
+                        } catch (NumberFormatException e) {
+                            LogUtil.e("Login", "分数格式错误: " + score);
+                        }
+                        
+                        // 兼容老代码，同步保存到全局变量
                         BaseApplication.setDepressionScore(score);
                         PreferenceUtil.putString("goal", score);
-                        SPUtil.putString(LoginActivity.this, "depression_score", score);
                     }
+                    
+                    // TODO: 在下一版本中移除此兼容代码
                     if (response.getData().get(0).getLast_test_time() != null) {
                         BaseApplication.setLastTestTime(response.getData().get(0).getLast_test_time());
                     }

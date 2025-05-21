@@ -142,7 +142,7 @@ public class MentalHealthRecordActivity extends BaseActivity {
      */
     private void initializeServerTablesAndFixData() {
         // 显示初始化进度对话框
-        showProgressDialog("正在初始化并修复数据...");
+        showProgressDialog("正在初始化并加载测试记录...");
                 
         // 获取当前用户ID
         String userId = getCurrentUserId();
@@ -153,23 +153,19 @@ public class MentalHealthRecordActivity extends BaseActivity {
             return;
         }
 
-        createLocalTestData(userId);
-        dismissProgressDialog();
-        
-        /* 原代码
-        // 添加一个超时处理机制
+        // 添加一个超时处理机制，延长到15秒以给服务器足够响应时间
         new Thread(() -> {
             try {
-                // 等待8秒
-                Thread.sleep(8000);
-                // 如果8秒后进度对话框仍在显示，则说明可能请求超时
+                // 等待15秒
+                Thread.sleep(15000);
+                // 如果15秒后进度对话框仍在显示，则说明可能请求超时
                 runOnUiThread(() -> {
                     if (isProgressDialogShowing()) {
-                        LogUtil.e("MentalHealthRecord", "初始化请求超时，创建本地测试数据");
+                        LogUtil.e("MentalHealthRecord", "服务器请求超时，尝试直接获取历史记录");
                         dismissProgressDialog();
                         
-                        // 创建本地测试数据
-                        createLocalTestData(userId);
+                        // 直接尝试获取历史记录
+                        loadData();
                     }
                 });
             } catch (InterruptedException e) {
@@ -177,63 +173,27 @@ public class MentalHealthRecordActivity extends BaseActivity {
             }
         }).start();
         
+        // 确保使用正确的API路径
+        String initUrl = Urls.INIT_DEPRESSION_TABLES;
+        LogUtil.i("MentalHealthRecord", "调用API初始化: " + initUrl);
+        
         // 先触发表初始化
-        HttpUtil.post(Urls.baseUrl + "api/depression/init", null, new HttpUtil.HttpCallback() {
+        HttpUtil.post(initUrl, null, new HttpUtil.HttpCallback() {
             @Override
             public void onSuccess(String response) {
                 LogUtil.i("表初始化", "初始化结果: " + response);
                 
-                // 再触发数据修复 - 在服务器上执行一次测试数据保存
-                Map<String, Object> testDataMap = new HashMap<>();
-                try {
-                    // 转换userId为整数
-                    int userIdInt = Integer.parseInt(userId);
-                    testDataMap.put("userId", userIdInt);  // 使用Integer而不是String
-                    testDataMap.put("score", 75);  // 测试得分
-                    testDataMap.put("level", "测试数据");
-                    testDataMap.put("answers", "{}");  // 空的答案JSON
-                    
-                    // 尝试修复数据
-                    HttpUtil.post(Urls.baseUrl + "api/depression/save", testDataMap, new HttpUtil.HttpCallback() {
-                        @Override
-                        public void onSuccess(String fixResponse) {
-                            LogUtil.i("数据修复", "保存测试数据结果: " + fixResponse);
-                            // 无论成功与否，都继续加载数据
-                            loadData();
-                        }
-                        
-                        @Override
-                        public void onError(Exception e) {
-                            LogUtil.e("数据修复", "保存测试数据失败: " + e.getMessage());
-                            runOnUiThread(() -> {
-                                ToastUtil.showBottomToast("数据修复失败，使用本地测试数据");
-                                dismissProgressDialog();
-                                createLocalTestData(userId);
-                            });
-                        }
-                    });
-                } catch (NumberFormatException e) {
-                    LogUtil.e("MentalHealthRecord", "转换userId为整数失败: " + e.getMessage());
-                    runOnUiThread(() -> {
-                        ToastUtil.showBottomToast("用户ID格式错误，请重新登录");
-                        dismissProgressDialog();
-                        finish();
-                    });
-                }
+                // 初始化成功后直接加载历史数据
+                loadData();
             }
             
             @Override
             public void onError(Exception e) {
                 LogUtil.e("表初始化", "初始化失败: " + e.getMessage());
-                // 请求失败使用本地测试数据
-                runOnUiThread(() -> {
-                    ToastUtil.showBottomToast("数据库初始化请求失败，使用本地测试数据");
-                    dismissProgressDialog();
-                    createLocalTestData(userId);
-                });
+                // 初始化失败也尝试加载历史数据
+                loadData();
             }
         });
-        */
     }
 
     private void loadData() {
@@ -249,184 +209,195 @@ public class MentalHealthRecordActivity extends BaseActivity {
                 return;
             }
             
-            // 直接使用本地测试数据，不再请求服务器
-            createLocalTestData(userId);
-            
-            /* 原有代码已注释
             ToastUtil.showBottomToast("正在加载用户ID: " + userId + " 的测试记录");
             LogUtil.i("MentalHealthRecord", "加载用户ID: " + userId + " 的测试历史");
             
-            // 使用POST请求而不是GET以提高兼容性
-            Map<String, Object> params = new HashMap<>();
-            try {
-                // 转换userId为整数
-                int userIdInt = Integer.parseInt(userId);
-                params.put("userId", userIdInt);  // 使用Integer而不是String
-                
-                String finalUserId = userId;
-                HttpUtil.post(Urls.baseUrl + "api/depression/history", params, new HttpUtil.HttpCallback() {
-                    @Override
-                    public void onSuccess(String response) {
-                        try {
-                            // 打印完整响应用于调试
-                            LogUtil.e("MentalHealthRecord", "完整JSON响应: " + response);
+            // 确保使用正确的API路径
+            String historyUrl = Urls.GET_DEPRESSION_HISTORY + userId;
+            LogUtil.i("MentalHealthRecord", "调用API获取历史: " + historyUrl);
+            
+            // 直接使用GET请求获取历史数据
+            HttpUtil.get(historyUrl, null, new HttpUtil.HttpCallback() {
+                @Override
+                public void onSuccess(String response) {
+                    try {
+                        // 打印完整响应用于调试
+                        LogUtil.i("MentalHealthRecord", "历史数据响应: " + response);
+                        
+                        JSONObject jsonObject = new JSONObject(response);
+                        if (jsonObject.getBoolean("success")) {
+                            JSONArray data = jsonObject.getJSONArray("data");
+                            LogUtil.i("MentalHealthRecord", "解析到的数据数组长度: " + data.length());
                             
-                            JSONObject jsonObject = new JSONObject(response);
-                            if (jsonObject.getBoolean("success")) {
-                                JSONArray data = jsonObject.getJSONArray("data");
-                                LogUtil.i("MentalHealthRecord", "解析到的数据数组长度: " + data.length());
-                                
-                                // 手动解析JSON数组
-                                historyList = new ArrayList<>();
-                                boolean hasValidData = false;
-                                
-                                for (int i = 0; i < data.length(); i++) {
-                                    try {
-                                        JSONObject item = data.getJSONObject(i);
-                                        LogUtil.i("MentalHealthRecord", "记录[" + i + "]: " + item.toString());
-                                        
-                                        // 检查是否有任何非null字段
-                                        boolean hasNonNullField = false;
-                                        Iterator<String> keys = item.keys();
-                                        while (keys.hasNext()) {
-                                            String key = keys.next();
-                                            Object value = item.get(key);
-                                            if (value != null && !value.equals(JSONObject.NULL) && !"null".equals(value.toString())) {
-                                                hasNonNullField = true;
-                                                break;
-                                            }
-                                        }
-                                        
-                                        if (!hasNonNullField) {
-                                            LogUtil.e("MentalHealthRecord", "跳过全null记录");
-                                            continue;
-                                        }
-                                        
-                                        DepressionTestHistory history = new DepressionTestHistory();
-                                        
-                                        // 尝试各种可能的字段名
-                                        // ID字段
-                                        int id = 0;
-                                        if (item.has("hId")) id = item.optInt("hId", 0);
-                                        else if (item.has("h_id")) id = item.optInt("h_id", 0);
-                                        else if (item.has("id")) id = item.optInt("id", 0);
-                                        history.setHId(id);
-                                        
-                                        // 用户ID字段
-                                        int uid = 0;
-                                        if (item.has("hUid")) uid = item.optInt("hUid", 0);
-                                        else if (item.has("h_uid")) uid = item.optInt("h_uid", 0);
-                                        else if (item.has("uid")) uid = item.optInt("uid", 0);
-                                        else if (item.has("userId")) uid = item.optInt("userId", 0);
-                                        else if (item.has("user_id")) uid = item.optInt("user_id", 0);
-                                        history.setHUid(uid);
-                                        
-                                        // 得分字段
-                                        int score = 0;
-                                        if (item.has("hScore")) score = item.optInt("hScore", 0);
-                                        else if (item.has("h_score")) score = item.optInt("h_score", 0);
-                                        else if (item.has("score")) score = item.optInt("score", 0);
-                                        history.setHScore(score);
-                                        
-                                        // 评估级别字段
-                                        String level = "未知";
-                                        if (item.has("hLevel")) level = item.optString("hLevel", "未知");
-                                        else if (item.has("h_level")) level = item.optString("h_level", "未知");
-                                        else if (item.has("level")) level = item.optString("level", "未知");
-                                        history.setHLevel(level);
-                                        
-                                        // 答案字段
-                                        String answers = "";
-                                        if (item.has("hAnswers")) answers = item.optString("hAnswers", "");
-                                        else if (item.has("h_answers")) answers = item.optString("h_answers", "");
-                                        else if (item.has("answers")) answers = item.optString("answers", "");
-                                        history.setHAnswers(answers);
-                                        
-                                        // 处理日期
-                                        history.setHDate(new Date()); // 默认当前时间
-                                        String dateStr = null;
-                                        if (item.has("hDate")) dateStr = item.optString("hDate", null);
-                                        else if (item.has("h_date")) dateStr = item.optString("h_date", null);
-                                        else if (item.has("date")) dateStr = item.optString("date", null);
-                                        
-                                        if (dateStr != null && !dateStr.isEmpty()) {
-                                            try {
+                            // 手动解析JSON数组
+                            historyList = new ArrayList<>();
+                            
+                            // 解析每条记录
+                            for (int i = 0; i < data.length(); i++) {
+                                try {
+                                    JSONObject item = data.getJSONObject(i);
+                                    LogUtil.i("MentalHealthRecord", "记录[" + i + "]: " + item.toString());
+                                    
+                                    DepressionTestHistory history = new DepressionTestHistory();
+                                    
+                                    // 尝试各种可能的字段名 - 添加全小写字段名支持
+                                    // ID字段
+                                    int id = 0;
+                                    if (item.has("hId")) id = item.optInt("hId", 0);
+                                    else if (item.has("h_id")) id = item.optInt("h_id", 0);
+                                    else if (item.has("id")) id = item.optInt("id", 0);
+                                    else if (item.has("hid")) id = item.optInt("hid", 0);
+                                    history.setHId(id);
+                                    
+                                    // 用户ID字段
+                                    int uid = 0;
+                                    if (item.has("hUid")) uid = item.optInt("hUid", 0);
+                                    else if (item.has("h_uid")) uid = item.optInt("h_uid", 0);
+                                    else if (item.has("uid")) uid = item.optInt("uid", 0);
+                                    else if (item.has("userId")) uid = item.optInt("userId", 0);
+                                    else if (item.has("user_id")) uid = item.optInt("user_id", 0);
+                                    else if (item.has("huid")) uid = item.optInt("huid", 0);
+                                    history.setHUid(uid);
+                                    
+                                    // 得分字段
+                                    int score = 0;
+                                    if (item.has("hScore")) score = item.optInt("hScore", 0);
+                                    else if (item.has("h_score")) score = item.optInt("h_score", 0);
+                                    else if (item.has("score")) score = item.optInt("score", 0);
+                                    else if (item.has("hscore")) score = item.optInt("hscore", 0);
+                                    history.setHScore(score);
+                                    
+                                    // 评估级别字段
+                                    String level = "未知";
+                                    if (item.has("hLevel")) level = item.optString("hLevel", "未知");
+                                    else if (item.has("h_level")) level = item.optString("h_level", "未知");
+                                    else if (item.has("level")) level = item.optString("level", "未知");
+                                    else if (item.has("hlevel")) level = item.optString("hlevel", "未知");
+                                    history.setHLevel(level);
+                                    
+                                    // 答案字段
+                                    String answers = "";
+                                    if (item.has("hAnswers")) answers = item.optString("hAnswers", "");
+                                    else if (item.has("h_answers")) answers = item.optString("h_answers", "");
+                                    else if (item.has("answers")) answers = item.optString("answers", "");
+                                    else if (item.has("hanswers")) answers = item.optString("hanswers", "");
+                                    history.setHAnswers(answers);
+                                    
+                                    // 处理日期
+                                    String dateStr = null;
+                                    if (item.has("hDate")) dateStr = item.optString("hDate", null);
+                                    else if (item.has("h_date")) dateStr = item.optString("h_date", null);
+                                    else if (item.has("date")) dateStr = item.optString("date", null);
+                                    else if (item.has("hdate")) dateStr = item.optString("hdate", null);
+                                    
+                                    // 尝试多种日期格式
+                                    Date recordDate = null;
+                                    if (dateStr != null && !dateStr.isEmpty()) {
+                                        try {
+                                            // 尝试ISO 8601格式 (带T的格式)
+                                            if (dateStr.contains("T")) {
+                                                SimpleDateFormat sdfISO = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+                                                recordDate = sdfISO.parse(dateStr);
+                                            } else {
+                                                // 尝试标准格式
                                                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                                                Date date = sdf.parse(dateStr);
-                                                if (date != null) {
-                                                    history.setHDate(date);
+                                                recordDate = sdf.parse(dateStr);
+                                            }
+                                        } catch (Exception e1) {
+                                            try {
+                                                // 尝试不带秒的格式
+                                                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+                                                recordDate = sdf2.parse(dateStr);
+                                            } catch (Exception e2) {
+                                                try {
+                                                    // 尝试只带日期的格式
+                                                    SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                                                    recordDate = sdf3.parse(dateStr);
+                                                } catch (Exception e3) {
+                                                    LogUtil.e("MentalHealthRecord", "解析日期失败: " + dateStr);
                                                 }
-                                            } catch (Exception e) {
-                                                LogUtil.e("MentalHealthRecord", "解析日期失败: " + e.getMessage());
                                             }
                                         }
-                                        
-                                        // 检查记录是否有效（至少有一个非零值）
-                                        if (id > 0 || uid > 0 || score > 0 || !"未知".equals(level)) {
-                                            hasValidData = true;
-                                            historyList.add(history);
-                                            LogUtil.i("MentalHealthRecord", "添加有效记录: " + history.toString());
-                                        }
-                                    } catch (Exception e) {
-                                        LogUtil.e("MentalHealthRecord", "解析记录失败: " + e.getMessage());
                                     }
-                                }
-                                
-                                // 如果没有有效数据，使用本地测试数据
-                                if (!hasValidData) {
-                                    LogUtil.e("MentalHealthRecord", "没有有效数据，使用本地测试数据");
-                                    createLocalTestData(finalUserId);
-                                    return;
-                                }
-                                
-                                // 更新UI
-                                runOnUiThread(() -> {
-                                    try {
-                                        dismissProgressDialog();
-                                        if (noDataTv != null) {
-                                            noDataTv.setVisibility(View.GONE);
-                                        }
-                                        
-                                        if (adapter != null && recyclerView != null) {
-                                            adapter.setNewData(historyList);
-                                            recyclerView.setVisibility(View.VISIBLE);
-                                        }
-                                        
-                                        if (lineChart != null) {
-                                            updateChart();
-                                        }
-                                        
-                                        ToastUtil.showBottomToast("加载了 " + historyList.size() + " 条测试记录");
-                                    } catch (Exception e) {
-                                        LogUtil.e("MentalHealthRecord", "更新UI失败: " + e.getMessage());
-                                        ToastUtil.showBottomToast("更新界面失败");
+                                    
+                                    // 只有在成功解析到日期时才设置，否则保持为null
+                                    if (recordDate != null) {
+                                        history.setHDate(recordDate);
+                                        LogUtil.i("MentalHealthRecord", "成功解析日期: " + dateFormat.format(recordDate));
+                                    } else {
+                                        LogUtil.w("MentalHealthRecord", "无法解析日期，该记录将被跳过");
+                                        continue; // 跳过没有有效日期的记录
                                     }
-                                });
-                            } else {
-                                // 服务器返回错误
-                                String errorMsg = jsonObject.optString("result", "未知错误");
-                                LogUtil.e("MentalHealthRecord", "获取历史记录失败: " + errorMsg);
-                                createLocalTestData(finalUserId);
+                                    
+                                    // 检查记录是否有效（至少有一个非零值）
+                                    if (id > 0 || uid > 0 || score > 0 || !"未知".equals(level)) {
+                                        historyList.add(history);
+                                        LogUtil.i("MentalHealthRecord", "添加真实测试记录: " + history.toString());
+                                    }
+                                } catch (Exception e) {
+                                    LogUtil.e("MentalHealthRecord", "解析记录失败: " + e.getMessage());
+                                }
                             }
-                        } catch (Exception e) {
-                            LogUtil.e("MentalHealthRecord", "处理响应数据失败: " + e.getMessage());
-                            createLocalTestData(finalUserId);
+                            
+                            // 更新UI
+                            runOnUiThread(() -> {
+                                try {
+                                    dismissProgressDialog();
+                                    if (noDataTv != null) {
+                                        noDataTv.setVisibility(historyList.isEmpty() ? View.VISIBLE : View.GONE);
+                                    }
+                                    
+                                    if (adapter != null && recyclerView != null) {
+                                        adapter.setNewData(historyList);
+                                        recyclerView.setVisibility(historyList.isEmpty() ? View.GONE : View.VISIBLE);
+                                    }
+                                    
+                                    if (lineChart != null) {
+                                        updateChart();
+                                        lineChart.setVisibility(historyList.isEmpty() ? View.GONE : View.VISIBLE);
+                                    }
+                                    
+                                    // 如果有有效数据，保存最新分数到用户特定存储
+                                    if (!historyList.isEmpty()) {
+                                        DepressionTestHistory latestRecord = historyList.get(0);
+                                        if (latestRecord != null && latestRecord.getHScore() != null && 
+                                                latestRecord.getHUid() != null && latestRecord.getHUid() > 0) {
+                                            // 保存到用户特定存储
+                                            String userId = String.valueOf(latestRecord.getHUid());
+                                            int score = latestRecord.getHScore();
+                                            SPUtil.saveUserScore(MentalHealthRecordActivity.this, userId, score);
+                                            LogUtil.i("MentalHealthRecord", "保存最新分数到用户特定存储: 用户ID=" + userId + ", 分数=" + score);
+                                        }
+                                    }
+                                    
+                                    if (historyList.isEmpty()) {
+                                        ToastUtil.showBottomToast("暂无测试记录");
+                                    } else {
+                                        ToastUtil.showBottomToast("加载了 " + historyList.size() + " 条测试记录");
+                                    }
+                                } catch (Exception e) {
+                                    LogUtil.e("MentalHealthRecord", "更新UI失败: " + e.getMessage());
+                                    ToastUtil.showBottomToast("更新界面失败");
+                                }
+                            });
+                        } else {
+                            // 服务器返回错误
+                            String errorMsg = jsonObject.optString("result", "未知错误");
+                            LogUtil.e("MentalHealthRecord", "获取历史记录失败: " + errorMsg);
+                            showNoData();
                         }
+                    } catch (Exception e) {
+                        LogUtil.e("MentalHealthRecord", "处理响应数据失败: " + e.getMessage());
+                        showNoData();
                     }
-                    
-                    @Override
-                    public void onError(Exception e) {
-                        LogUtil.e("MentalHealthRecord", "获取历史记录失败: " + e.getMessage());
-                        createLocalTestData(finalUserId);
-                    }
-                });
-            } catch (NumberFormatException e) {
-                LogUtil.e("MentalHealthRecord", "转换userId为整数失败: " + e.getMessage());
-                dismissProgressDialog();
-                ToastUtil.showBottomToast("用户ID格式错误，请重新登录");
-                finish();
-            }
-            */
+                }
+                
+                @Override
+                public void onError(Exception e) {
+                    LogUtil.e("MentalHealthRecord", "获取历史记录失败: " + e.getMessage());
+                    showNoData();
+                }
+            });
         } catch (Exception e) {
             LogUtil.e("MentalHealthRecord", "加载数据失败: " + e.getMessage());
             dismissProgressDialog();
@@ -435,137 +406,122 @@ public class MentalHealthRecordActivity extends BaseActivity {
     }
 
     /**
-     * 创建本地测试数据并显示
+     * 显示无数据状态
      */
-    private void createLocalTestData(String userId) {
-        try {
-            int userIdInt = Integer.parseInt(userId);
-            
-            // 清空历史列表
-            historyList = new ArrayList<>();
-            
-            // 创建8条历史记录
-            // 时间范围：2025年4月1日 - 5月20日
-            // 分数要求：25-100之间
-            
-            // 创建日期格式
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-            
-            // 创建8条记录（从最旧到最新）
-            String[] dates = {
-                "2025-04-01 10:30:00",
-                "2025-04-08 14:45:00",
-                "2025-04-15 09:20:00",
-                "2025-04-22 16:15:00",
-                "2025-04-30 11:05:00",
-                "2025-05-07 13:40:00",
-                "2025-05-14 10:25:00",
-                "2025-05-20 15:50:00"
-            };
-            
-            // 调整分数范围在25-100之间，不必是5的倍数
-            int[] scores = {35, 78, 65, 72, 58, 82, 68, 63};
-            String[] levels = {
-                "重度抑郁",
-                "轻度抑郁",
-                "中度抑郁",
-                "轻度抑郁",
-                "重度抑郁",
-                "无抑郁",
-                "中度抑郁",
-                "中度抑郁"
-            };
-            
-            // 修改：先添加最新的记录
-            int latestScore = getLatestDepressionScore();
-            String latestLevel = getDepressionLevelByScore(latestScore);
-            
-            DepressionTestHistory latestRecord = new DepressionTestHistory();
-            latestRecord.setHId(9);
-            latestRecord.setHUid(userIdInt);
-            latestRecord.setHScore(latestScore);
-            latestRecord.setHLevel(latestLevel);
-            latestRecord.setHAnswers("{}");
-            latestRecord.setHDate(new Date()); // 使用当前日期作为最新记录
-            
-            historyList.add(latestRecord);
-            
-            LogUtil.i("MentalHealthRecord", "添加最新测试记录: 分数: " + latestScore + ", 评估: " + latestLevel);
-            
-            // 修改：从最新的记录开始添加历史记录
-            for (int i = dates.length - 1; i >= 0; i--) {
-                DepressionTestHistory record = new DepressionTestHistory();
-                record.setHId(i + 1);
-                record.setHUid(userIdInt);
-                record.setHScore(scores[i]);
-                record.setHLevel(levels[i]);
-                record.setHAnswers("{}");
-                
-                // 解析日期
-                Date date = sdf.parse(dates[i]);
-                record.setHDate(date);
-                
-                // 添加到列表
-                historyList.add(record);
-                
-                LogUtil.i("MentalHealthRecord", "创建历史记录: " + (i + 1) + 
-                          ", 日期: " + dates[i] + 
-                          ", 分数: " + scores[i] + 
-                          ", 评估: " + levels[i]);
+    private void showNoData() {
+        runOnUiThread(() -> {
+            try {
+                dismissProgressDialog();
+                if (noDataTv != null) {
+                    noDataTv.setVisibility(View.VISIBLE);
+                }
+                if (recyclerView != null) {
+                    recyclerView.setVisibility(View.GONE);
+                }
+                if (lineChart != null) {
+                    lineChart.setVisibility(View.GONE);
+                }
+                ToastUtil.showBottomToast("暂无测试记录");
+            } catch (Exception e) {
+                LogUtil.e("MentalHealthRecord", "显示无数据状态失败: " + e.getMessage());
             }
-            
-            // 更新UI
-            dismissProgressDialog();
-            
-            if (noDataTv != null) {
-                noDataTv.setVisibility(View.GONE);
-            }
-            
-            if (adapter != null && recyclerView != null) {
-                adapter.setNewData(historyList);
-                recyclerView.setVisibility(View.VISIBLE);
-            }
-            
-            // 更新图表
-            if (lineChart != null) {
-                updateChart();
-                lineChart.setVisibility(View.VISIBLE);
-            }
-            
-            ToastUtil.showBottomToast("数据已加载完毕");
-            
-        } catch (Exception e) {
-            LogUtil.e("MentalHealthRecord", "创建本地测试数据失败: " + e.getMessage());
-            e.printStackTrace();
-            
-            dismissProgressDialog();
-            if (noDataTv != null) {
-                noDataTv.setVisibility(View.VISIBLE);
-            }
-            if (lineChart != null) {
-                lineChart.setVisibility(View.GONE);
-            }
-            ToastUtil.showBottomToast("无法创建测试数据");
-        }
+        });
     }
-    
+
     /**
      * 获取最新的抑郁测试分数
-     * 尝试从本地存储或全局变量中获取最新的测试分数
+     * 尝试从抑郁测试历史记录中获取最新的测试分数
      */
     private int getLatestDepressionScore() {
-        // 尝试从SP中获取最新分数
-        int score = SPUtil.getInt(this, "latest_depression_score", 0);
+        // 获取当前用户ID
+        String userId = getCurrentUserId();
+        if (userId == null || userId.isEmpty()) {
+            LogUtil.e("MentalHealthRecord", "无法获取有效用户ID，返回默认分数");
+            return 75; // 默认分数
+        }
         
-        // 如果SP中没有，使用默认分数
+        // 从用户特定存储中获取分数
+        int score = SPUtil.getUserScore(this, userId);
+        LogUtil.i("MentalHealthRecord", "尝试获取用户ID " + userId + " 的特定分数: " + score);
+        
+        // 如果用户特定存储中没有，尝试从historyList中获取
+        if (score <= 0 && historyList != null && !historyList.isEmpty()) {
+            // 检查historyList中的第一条记录（最新记录）
+            DepressionTestHistory latestRecord = historyList.get(0);
+            if (latestRecord != null && latestRecord.getHScore() != null && latestRecord.getHUid() != null) {
+                // 确保记录属于当前用户
+                int recordUid = latestRecord.getHUid();
+                int currentUid = Integer.parseInt(userId);
+                
+                if (recordUid == currentUid) {
+                    score = latestRecord.getHScore();
+                    LogUtil.i("MentalHealthRecord", "从历史记录中获取当前用户的最新分数: " + score);
+                    
+                    // 保存到用户特定存储中
+                    SPUtil.saveUserScore(this, userId, score);
+                } else {
+                    LogUtil.w("MentalHealthRecord", "历史记录用户ID (" + recordUid + ") 与当前用户 (" + currentUid + ") 不匹配");
+                }
+            }
+        }
+        
+        // 尝试从服务器获取最新分数
         if (score <= 0) {
-            // 使用应用中的默认值，通常是在主页显示的分数
-            // 这里我们假设分数为75
-            score = 75;
+            String latestScoreUrl = Urls.GET_LATEST_SCORE + userId;
+            LogUtil.i("MentalHealthRecord", "尝试从服务器获取最新分数: " + latestScoreUrl);
             
-            LogUtil.i("MentalHealthRecord", "未找到本地保存的最新分数，使用默认分数: " + score);
+            // 注意：这是同步请求，仅在无其他数据源时使用
+            try {
+                // 创建一个用于同步的标志
+                final boolean[] completed = {false};
+                final int[] serverScore = {0};
+                
+                HttpUtil.get(latestScoreUrl, null, new HttpUtil.HttpCallback() {
+                    @Override
+                    public void onSuccess(String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            if (jsonObject.getBoolean("success")) {
+                                Object data = jsonObject.opt("data");
+                                if (data != null && !(data instanceof JSONObject)) {
+                                    serverScore[0] = jsonObject.optInt("data", 0);
+                                    LogUtil.i("MentalHealthRecord", "服务器返回分数: " + serverScore[0]);
+                                }
+                            }
+                        } catch (Exception e) {
+                            LogUtil.e("MentalHealthRecord", "解析服务器分数失败: " + e.getMessage());
+                        }
+                        completed[0] = true;
+                    }
+                    
+                    @Override
+                    public void onError(Exception e) {
+                        LogUtil.e("MentalHealthRecord", "获取服务器分数失败: " + e.getMessage());
+                        completed[0] = true;
+                    }
+                });
+                
+                // 等待最多2秒
+                for (int i = 0; i < 20 && !completed[0]; i++) {
+                    Thread.sleep(100);
+                }
+                
+                if (serverScore[0] > 0) {
+                    score = serverScore[0];
+                    // 保存到用户特定存储
+                    SPUtil.saveUserScore(this, userId, score);
+                }
+            } catch (Exception e) {
+                LogUtil.e("MentalHealthRecord", "获取服务器分数异常: " + e.getMessage());
+            }
+        }
+        
+        // 如果仍然没有，使用默认分数
+        if (score <= 0) {
+            score = 75; // 默认分数
+            LogUtil.i("MentalHealthRecord", "未找到用户 " + userId + " 的有效分数记录，使用默认分数: " + score);
         } else {
-            LogUtil.i("MentalHealthRecord", "找到本地保存的最新分数: " + score);
+            LogUtil.i("MentalHealthRecord", "最终使用的分数: " + score + " (用户ID: " + userId + ")");
         }
         
         return score;

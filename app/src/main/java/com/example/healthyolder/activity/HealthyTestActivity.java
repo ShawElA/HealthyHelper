@@ -219,12 +219,13 @@ public class HealthyTestActivity extends BaseActivity {
                 }
             }
             
-            // 先预先更新本地数据，即使网络请求失败，至少本地UI能显示新分数
+            // 使用新方法保存用户特定分数，确保与用户ID关联
+            SPUtil.saveUserScore(getApplicationContext(), userId, score);
+            
+            // 同时更新其他数据源，保持兼容性
             String scoreStr = String.valueOf(score);
             BaseApplication.setDepressionScore(scoreStr);
             PreferenceUtil.putString("goal", scoreStr);
-            SPUtil.putString(getApplicationContext(), "depression_score", scoreStr);
-            SPUtil.putString(getApplicationContext(), SPUtil.USER_ID, userId);
             
             // 记录当前时间为最近测试时间
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());

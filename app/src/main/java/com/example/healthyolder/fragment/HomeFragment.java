@@ -13,6 +13,8 @@ import com.example.healthyolder.activity.HealthyTestActivity;
 import com.example.healthyolder.activity.MainActivity;
 import com.example.healthyolder.activity.MentalHealthRecordActivity;
 import com.example.healthyolder.bean.RefreshEvent;
+import com.example.healthyolder.bean.Urls;
+import com.example.healthyolder.util.HttpUtil;
 import com.example.healthyolder.util.IntentUtil;
 import com.example.healthyolder.util.LogUtil;
 import com.example.healthyolder.util.PreferenceUtil;
@@ -24,6 +26,8 @@ import com.example.healthyolder.view.SportStepView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import org.json.JSONObject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -129,40 +133,158 @@ public class HomeFragment extends Fragment {
 
 
     private void initData() {
-        // 尝试从多个来源获取分数，确保数据一致性
         try {
-            // 首先尝试从BaseApplication获取分数
-            if (BaseApplication.getDepressionScore() != null && !BaseApplication.getDepressionScore().isEmpty() 
-                    && !"0".equals(BaseApplication.getDepressionScore())) {
-                currentScore = Integer.parseInt(BaseApplication.getDepressionScore());
-                LogUtil.i("HomeFragment", "使用BaseApplication分数: " + currentScore);
-            }
-            // 然后尝试从PreferenceUtil获取
-            else if (TextUtil.isValidate(PreferenceUtil.getString("goal"))) {
-                currentScore = Integer.parseInt(PreferenceUtil.getString("goal"));
-                LogUtil.i("HomeFragment", "使用PreferenceUtil分数: " + currentScore);
-                // 同步到BaseApplication
-                BaseApplication.setDepressionScore(String.valueOf(currentScore));
-            }
-            // 最后尝试从SPUtil获取
-            else if (getContext() != null) {
-                String score = SPUtil.getString(getContext(), "depression_score", "0");
-                if (TextUtil.isValidate(score) && !"0".equals(score)) {
-                    currentScore = Integer.parseInt(score);
-                    LogUtil.i("HomeFragment", "使用SPUtil分数: " + currentScore);
-                    // 同步数据
-                    BaseApplication.setDepressionScore(score);
-                    PreferenceUtil.putString("goal", score);
-                }
+            // 1. 获取当前登录用户ID
+            String userId = getCurrentUserId();
+            if (userId == null || userId.isEmpty()) {
+                LogUtil.e("HomeFragment", "无法获取有效的用户ID，无法显示用户特定分数");
+                return;
             }
             
-            // 更新UI
-            if (currentScore > 0) {
-                sportStepCount.setCurrentCount(100, currentScore);
-                changeHint(currentScore);
+            LogUtil.i("HomeFragment", "开始获取用户ID " + userId + " 的分数");
+            
+            // 2. 仅使用用户特定存储获取分数
+            int score = SPUtil.getUserScore(getContext(), userId);
+            
+            // 3. 如果找到用户特定分数，则使用它
+            if (score > 0) {
+                currentScore = score;
+                LogUtil.i("HomeFragment", "成功获取用户ID " + userId + " 的特定分数: " + currentScore);
+                
+                // 4. 更新UI
+                if (sportStepCount != null) {
+                    sportStepCount.setCurrentCount(100, currentScore);
+                    changeHint(currentScore);
+                } else {
+                    LogUtil.e("HomeFragment", "sportStepCount为空，无法更新UI");
+                }
+            } else {
+                // 5. 如果没有找到用户特定分数，尝试从服务器获取
+                requestLatestScoreFromServer(userId);
             }
         } catch (Exception e) {
             LogUtil.e("HomeFragment", "初始化分数数据出错: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 从服务器获取当前用户的最新分数
+     */
+    private void requestLatestScoreFromServer(String userId) {
+        if (getContext() == null) return;
+        
+        try {
+            String url = Urls.GET_LATEST_SCORE + userId;
+            LogUtil.i("HomeFragment", "尝试从服务器获取用户 " + userId + " 的最新分数: " + url);
+            
+            HttpUtil.get(url, null, new HttpUtil.HttpCallback() {
+                @Override
+                public void onSuccess(String response) {
+                    try {
+                        LogUtil.i("HomeFragment", "服务器返回: " + response);
+                        JSONObject jsonObject = new JSONObject(response);
+                        if (jsonObject.getBoolean("success")) {
+                            int score = jsonObject.optInt("data", 0);
+                            if (score > 0) {
+                                // 保存到用户特定存储
+                                SPUtil.saveUserScore(getContext(), userId, score);
+                                
+                                // 更新UI
+                                currentScore = score;
+                                LogUtil.i("HomeFragment", "从服务器获取到用户 " + userId + " 的最新分数: " + score);
+                                
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(() -> {
+                                        if (sportStepCount != null) {
+                                            sportStepCount.setCurrentCount(100, currentScore);
+                                            changeHint(currentScore);
+                                        }
+                                    });
+                                }
+                            } else {
+                                LogUtil.w("HomeFragment", "服务器返回无效分数: " + score);
+                            }
+                        } else {
+                            LogUtil.w("HomeFragment", "服务器返回失败: " + jsonObject.optString("result", "未知错误"));
+                        }
+                    } catch (Exception e) {
+                        LogUtil.e("HomeFragment", "解析服务器响应失败: " + e.getMessage());
+                    }
+                }
+                
+                @Override
+                public void onError(Exception e) {
+                    LogUtil.e("HomeFragment", "获取最新分数失败: " + e.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            LogUtil.e("HomeFragment", "请求服务器最新分数异常: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 获取当前登录的用户ID
+     */
+    private String getCurrentUserId() {
+        if (getContext() == null) {
+            LogUtil.e("HomeFragment", "getContext() 为空，无法获取用户ID");
+            return null;
+        }
+        
+        // 1. 尝试从SPUtil获取
+        String userId = SPUtil.getString(getContext(), SPUtil.USER_ID, "");
+        LogUtil.i("HomeFragment", "从SPUtil获取的用户ID: " + userId);
+        if (isValidUserId(userId)) {
+            LogUtil.i("HomeFragment", "使用SPUtil中的有效用户ID: " + userId);
+            return userId;
+        }
+        
+        // 2. 尝试从BaseApplication获取
+        userId = BaseApplication.getUserId();
+        LogUtil.i("HomeFragment", "从BaseApplication获取的用户ID: " + userId);
+        if (isValidUserId(userId)) {
+            // 同步回SPUtil
+            SPUtil.putString(getContext(), SPUtil.USER_ID, userId);
+            LogUtil.i("HomeFragment", "使用BaseApplication中的有效用户ID并同步到SPUtil: " + userId);
+            return userId;
+        }
+        
+        // 3. 尝试从PreferenceUtil获取
+        userId = PreferenceUtil.getString("userId", "");
+        LogUtil.i("HomeFragment", "从PreferenceUtil获取的用户ID: " + userId);
+        if (isValidUserId(userId)) {
+            // 同步到其他存储
+            SPUtil.putString(getContext(), SPUtil.USER_ID, userId);
+            BaseApplication.setUserId(userId);
+            LogUtil.i("HomeFragment", "使用PreferenceUtil中的有效用户ID并同步到其他存储: " + userId);
+            return userId;
+        }
+        
+        LogUtil.e("HomeFragment", "所有存储方式都未找到有效的用户ID");
+        return null;
+    }
+    
+    /**
+     * 检查用户ID是否有效
+     */
+    private boolean isValidUserId(String userId) {
+        if (userId == null) {
+            LogUtil.d("HomeFragment", "用户ID为null");
+            return false;
+        }
+        if (userId.isEmpty()) {
+            LogUtil.d("HomeFragment", "用户ID为空字符串");
+            return false;
+        }
+        
+        try {
+            int id = Integer.parseInt(userId);
+            boolean isValid = id > 0;
+            LogUtil.d("HomeFragment", "用户ID " + userId + " 解析为数字: " + id + ", 是否有效: " + isValid);
+            return isValid;
+        } catch (NumberFormatException e) {
+            LogUtil.e("HomeFragment", "用户ID " + userId + " 不是有效的数字格式");
+            return false;
         }
     }
 

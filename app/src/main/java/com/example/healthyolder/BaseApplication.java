@@ -104,14 +104,29 @@ public class BaseApplication extends Application {
         return depressionScore;
     }
 
+    /**
+     * @deprecated 已弃用。应使用depression_test_history表数据代替。
+     * 为兼容旧代码仍保留此方法。
+     */
+    @Deprecated
     public static void setDepressionScore(String score) {
         BaseApplication.depressionScore = score;
     }
 
+    /**
+     * @deprecated 已弃用。应使用depression_test_history表的h_date字段代替。
+     * 为兼容旧代码仍保留此方法。
+     */
+    @Deprecated
     public static String getLastTestTime() {
         return lastTestTime;
     }
 
+    /**
+     * @deprecated 已弃用。应使用depression_test_history表的h_date字段代替。
+     * 为兼容旧代码仍保留此方法。
+     */
+    @Deprecated
     public static void setLastTestTime(String time) {
         BaseApplication.lastTestTime = time;
     }
