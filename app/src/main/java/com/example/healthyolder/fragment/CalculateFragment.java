@@ -275,6 +275,19 @@ public class CalculateFragment extends Fragment{
             public void onSuccess(EmptyResult response) {
                 // 消息发送成功，但不立即刷新页面
                 // 这样可以保持"正在思考"的提示直到AI响应到达
+                
+                // 对于新用户首次发送消息时确保消息会显示在界面上，不依赖服务器刷新
+                if (arrayList.isEmpty()) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // 消息已经被添加到界面，但为了确保adapter正确显示
+                            if (adapter != null) {
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    });
+                }
             }
 
             @Override
@@ -346,15 +359,20 @@ public class CalculateFragment extends Fragment{
 
     public void initData(){
         srl_refresh.setRefreshing(true);
-        HttpUtil.getResponse(Urls.SELECTCHAT, null, null, new ObjectCallBack<ChatResult>(ChatResult.class) {
+        Map<String, String> params = new HashMap<>();
+        params.put("u_id", BaseApplication.getUserId());
+        HttpUtil.getResponse(Urls.SELECTCHAT, params, null, new ObjectCallBack<ChatResult>(ChatResult.class) {
             @Override
             public void onSuccess(ChatResult response) {
                 srl_refresh.setRefreshing(false);
                 if (response.isSuccess()){
+                    // 即使返回的数据为空，也视为成功，并初始化RecyclerView
                     disposeCommentData(response);
                     initRecyclerView();
                 }else {
-                    setLayoutVisible(View.VISIBLE, View.GONE);
+                    // 服务器返回失败时，仍然初始化空的RecyclerView
+                    arrayList.clear();
+                    initRecyclerView();
                     ToastUtil.showBottomToast("获取聊天记录失败");
                 }
             }
@@ -362,6 +380,9 @@ public class CalculateFragment extends Fragment{
             @Override
             public void onFail(Call call, Exception e) {
                 srl_refresh.setRefreshing(false);
+                // 网络错误时，同样初始化空的RecyclerView
+                arrayList.clear();
+                initRecyclerView();
                 ToastUtil.showBottomToast("网络错误，请检查网络后重试");
             }
         });
@@ -425,11 +446,36 @@ public class CalculateFragment extends Fragment{
         } else{
             adapter.notifyDataSetChanged();
         }
-        rv_comment.scrollToPosition(arrayList.size() - 1);
+        
+        // 滚动到最新消息
+        if (arrayList.size() > 0) {
+            rv_comment.scrollToPosition(arrayList.size() - 1);
+        }
+        
+        // 即使没有聊天记录，也显示聊天界面，让用户可以发送消息
         if (arrayList.size() == 0){
-            setLayoutVisible(View.VISIBLE, View.GONE);
-        }else {
+            // 改为显示空白聊天界面，而不是"无数据"界面
             setLayoutVisible(View.GONE, View.VISIBLE);
+            // 显示一个欢迎提示
+            showWelcomeMessage();
+        } else {
+            setLayoutVisible(View.GONE, View.VISIBLE);
+        }
+    }
+
+    // 为新用户显示欢迎提示消息
+    private void showWelcomeMessage() {
+        // 只在UI上显示欢迎消息，不存入数据库
+        ChatResult.DataBean welcomeMsg = new ChatResult.DataBean();
+        welcomeMsg.setC_uid("-1"); // AI的ID
+        welcomeMsg.setC_remark("您好！我是智能医生助手，很高兴为您服务。请问有什么健康问题需要咨询吗？");
+        welcomeMsg.setC_date(System.currentTimeMillis() + "");
+        welcomeMsg.setTemp_id("welcome_msg");
+        
+        arrayList.add(welcomeMsg);
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+            rv_comment.scrollToPosition(arrayList.size() - 1);
         }
     }
 
