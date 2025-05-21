@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,6 +97,14 @@ public class CalculateFragment extends Fragment{
     private static final int PERMISSION_REQUEST_RECORD_AUDIO = 1;
     // 语音识别功能可用状态
     private boolean isSpeechRecognitionAvailable = false;
+    
+    // 文本转语音相关变量
+    private TextToSpeech textToSpeech;
+    private boolean isTTSInitialized = false;
+    private String currentSpeakingText = null;
+    private boolean isSpeaking = false;
+    // 当前正在朗读的视图
+    private ImageView currentSpeakingView = null;
 
     public static CalculateFragment newInstance(String param1, String param2) {
         CalculateFragment fragment = new CalculateFragment();
@@ -729,6 +739,9 @@ public class CalculateFragment extends Fragment{
         // 初始化时检查语音识别可用性
         checkSpeechRecognitionAvailability();
         
+        // 初始化文本转语音
+        initTextToSpeech();
+        
         initData();
         initEvent();
         return view;
@@ -795,13 +808,14 @@ public class CalculateFragment extends Fragment{
             rv_comment.setLayoutManager(new LinearLayoutManager(getContext()));
             adapter = new CommonAdapter<ChatResult.DataBean>(getContext(), R.layout.item_chat_message, arrayList) {
                 @Override
-                public void convert(ViewHolder holder, ChatResult.DataBean o) {
+                public void convert(ViewHolder holder, final ChatResult.DataBean o) {
                     ImageView iv_other = holder.getView(R.id.iv_other);
                     ImageView iv_me = holder.getView(R.id.iv_me);
                     TextView tv_other = holder.getView(R.id.tv_other);
                     TextView tv_me = holder.getView(R.id.tv_me);
                     LinearLayout ll_other = holder.getView(R.id.ll_other);
                     LinearLayout ll_me = holder.getView(R.id.ll_me);
+                    final ImageView iv_speaker = holder.getView(R.id.iv_speaker);
                     
                     // 检查消息发送者
                     String userId = BaseApplication.getUserId();
@@ -819,6 +833,26 @@ public class CalculateFragment extends Fragment{
                         ll_me.setVisibility(View.GONE);
                         // 使用Markdown渲染AI回复
                         MarkdownUtil.setMarkdown(getContext(), tv_other, o.getC_remark());
+                        
+                        // 检查是否是正在朗读的消息
+                        if (isSpeaking && o.getC_remark().equals(currentSpeakingText)) {
+                            iv_speaker.setImageResource(android.R.drawable.ic_btn_speak_now);
+                            iv_speaker.setAlpha(1.0f);
+                            currentSpeakingView = iv_speaker;
+                        } else {
+                            iv_speaker.setImageResource(android.R.drawable.ic_lock_silent_mode_off);
+                            iv_speaker.setAlpha(0.7f);
+                        }
+                        
+                        // 为AI回复添加点击事件，触发朗读功能
+                        View.OnClickListener speakClickListener = new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                speakText(o.getC_remark(), iv_speaker);
+                            }
+                        };
+                        tv_other.setOnClickListener(speakClickListener);
+                        iv_speaker.setOnClickListener(speakClickListener);
                     }
                     // 其他情况（例如其他用户的消息）不显示
                     else {
@@ -885,5 +919,200 @@ public class CalculateFragment extends Fragment{
                 LogUtil.e("SpeechRecognition", "销毁语音识别器出错: " + e.getMessage());
             }
         }
+        
+        // 释放文本转语音资源
+        if (textToSpeech != null) {
+            try {
+                textToSpeech.stop();
+                textToSpeech.shutdown();
+                textToSpeech = null;
+            } catch (Exception e) {
+                LogUtil.e("TTS", "销毁文本转语音引擎出错: " + e.getMessage());
+            }
+        }
+    }
+    
+    @Override
+    public void onPause() {
+        super.onPause();
+        // 页面暂停时停止朗读
+        stopSpeaking();
+    }
+    
+    /**
+     * 初始化文本转语音引擎
+     */
+    private void initTextToSpeech() {
+        textToSpeech = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    // 设置语言为中文
+                    int result = textToSpeech.setLanguage(Locale.CHINESE);
+                    
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        LogUtil.e("TTS", "中文语言不可用，尝试使用系统默认语言");
+                        result = textToSpeech.setLanguage(Locale.getDefault());
+                        
+                        if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                            LogUtil.e("TTS", "系统默认语言也不可用");
+                            ToastUtil.showBottomToast("文本朗读功能不可用");
+                            return;
+                        }
+                    }
+                    
+                    // 设置语速和音调
+                    textToSpeech.setSpeechRate(0.9f);  // 稍微慢一点，适合老年人
+                    textToSpeech.setPitch(1.0f);      // 正常音调
+                    
+                    // 设置完成监听器
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+                        textToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                            @Override
+                            public void onStart(String utteranceId) {
+                                isSpeaking = true;
+                            }
+
+                            @Override
+                            public void onDone(String utteranceId) {
+                                isSpeaking = false;
+                                
+                                // 在UI线程中更新UI
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (currentSpeakingView != null) {
+                                                currentSpeakingView.setImageResource(android.R.drawable.ic_lock_silent_mode_off);
+                                                currentSpeakingView.setAlpha(0.7f);
+                                                currentSpeakingView = null;
+                                            }
+                                            currentSpeakingText = null;
+                                        }
+                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onError(String utteranceId) {
+                                isSpeaking = false;
+                                
+                                // 在UI线程中更新UI
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (currentSpeakingView != null) {
+                                                currentSpeakingView.setImageResource(android.R.drawable.ic_lock_silent_mode_off);
+                                                currentSpeakingView.setAlpha(0.7f);
+                                                currentSpeakingView = null;
+                                            }
+                                            currentSpeakingText = null;
+                                            ToastUtil.showBottomToast("朗读出错");
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                    
+                    isTTSInitialized = true;
+                    LogUtil.i("TTS", "文本转语音初始化成功");
+                } else {
+                    LogUtil.e("TTS", "文本转语音初始化失败");
+                }
+            }
+        });
+    }
+    
+    /**
+     * 朗读文本内容
+     * @param text 要朗读的文本
+     * @param speakerIcon 喇叭图标视图
+     */
+    private void speakText(String text, ImageView speakerIcon) {
+        if (!isTTSInitialized) {
+            ToastUtil.showBottomToast("文本朗读引擎未初始化");
+            return;
+        }
+        
+        // 如果正在朗读同一段文本，则停止
+        if (isSpeaking && text.equals(currentSpeakingText)) {
+            stopSpeaking();
+            return;
+        }
+        
+        // 停止当前朗读，准备朗读新内容
+        stopSpeaking();
+        
+        // 处理文本，去除Markdown语法等
+        String cleanText = cleanTextForSpeech(text);
+        currentSpeakingText = text;
+        currentSpeakingView = speakerIcon;
+        
+        // 更新UI，显示正在朗读的状态
+        if (currentSpeakingView != null) {
+            currentSpeakingView.setImageResource(android.R.drawable.ic_btn_speak_now);
+            currentSpeakingView.setAlpha(1.0f);
+        }
+        
+        // 开始朗读
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            android.os.Bundle bundle = new android.os.Bundle();
+            bundle.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "messageId");
+            textToSpeech.speak(cleanText, TextToSpeech.QUEUE_FLUSH, bundle, "messageId");
+        } else {
+            HashMap<String, String> hash = new HashMap<>();
+            hash.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "messageId");
+            textToSpeech.speak(cleanText, TextToSpeech.QUEUE_FLUSH, hash);
+        }
+        
+        ToastUtil.showBottomToast("正在朗读...");
+    }
+    
+    /**
+     * 停止朗读
+     */
+    private void stopSpeaking() {
+        if (isTTSInitialized && textToSpeech != null) {
+            textToSpeech.stop();
+            isSpeaking = false;
+            
+            // 更新UI，重置喇叭图标
+            if (currentSpeakingView != null) {
+                currentSpeakingView.setImageResource(android.R.drawable.ic_lock_silent_mode_off);
+                currentSpeakingView.setAlpha(0.7f);
+                currentSpeakingView = null;
+            }
+            
+            currentSpeakingText = null;
+        }
+    }
+    
+    /**
+     * 清理文本，去除Markdown语法和其他不适合朗读的内容
+     */
+    private String cleanTextForSpeech(String text) {
+        if (text == null) return "";
+        
+        // 移除Markdown标题符号
+        String cleaned = text.replaceAll("#+ ", "");
+        
+        // 移除Markdown链接，只保留链接文本
+        cleaned = cleaned.replaceAll("\\[([^\\]]+)\\]\\([^)]+\\)", "$1");
+        
+        // 移除Markdown列表符号
+        cleaned = cleaned.replaceAll("^[*-] ", "").replaceAll("\n[*-] ", "\n");
+        
+        // 移除Markdown粗体和斜体标记
+        cleaned = cleaned.replaceAll("\\*\\*([^*]+)\\*\\*", "$1").replaceAll("\\*([^*]+)\\*", "$1");
+        
+        // 移除Markdown代码块
+        cleaned = cleaned.replaceAll("```[^`]*```", "代码块已省略");
+        
+        // 移除Markdown行内代码
+        cleaned = cleaned.replaceAll("`([^`]+)`", "$1");
+        
+        return cleaned;
     }
 }
